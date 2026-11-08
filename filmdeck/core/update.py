@@ -12,6 +12,7 @@ to the active one, switched atomically. A new version is started once
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 import shutil
@@ -27,6 +28,8 @@ from pathlib import Path
 from .. import __version__ as APP_VERSION
 from . import paths
 from .driver import SOURCE_FILE, parse_version, read_version
+
+log = logging.getLogger(__name__)
 
 REPO = "cgillinger/opticfilm135i-linux"
 STATE_FILE = "state.json"
@@ -166,7 +169,8 @@ def check(installed_version: str | None, installed_source: dict | None, channel:
         if installed_version is None:
             return None
         return check_release(installed_version, timeout)
-    except Exception:
+    except Exception as e:
+        log.warning("update check failed (%s): %s: %s", channel, type(e).__name__, e)
         return None
 
 
@@ -281,6 +285,7 @@ def install(remote: Remote, *, verify: Callable[[Path], bool] | None = None,
         raise UpdateError("the new driver does not start; the old version stays active")
 
     _switch_current(name)
+    log.info("driver installed: %s (previous: %s)", name, previous_name)
     new_state = {"current": name, "previous": previous_name if previous_name != name else state.get("previous")}
     _write_state(new_state)
     _prune(keep={new_state["current"], new_state["previous"]})
@@ -295,6 +300,7 @@ def rollback() -> str:
         raise UpdateError("there is no previous version")
     _switch_current(prev)
     _write_state({"current": prev, "previous": state.get("current")})
+    log.info("driver rolled back to %s", prev)
     return prev
 
 

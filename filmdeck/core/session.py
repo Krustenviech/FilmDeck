@@ -16,6 +16,7 @@ exported, ask_next, strip_done, finished.
 from __future__ import annotations
 
 import dataclasses
+import logging
 import os
 import shutil
 import threading
@@ -34,6 +35,7 @@ STRIP_MODE = "strip"
 FILM_MODE = "film"
 FRAMES_PER_STRIP = 6
 LOG_KEEP = 20
+log = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -68,7 +70,9 @@ class _Outcome:
 def check_scanner(driver: drv.Driver) -> ScannerStatus:
     """Read-only look at the scanner (``of135i status``). Never call while a session runs."""
     rc, out, err = drv.run_short(driver, drv.status_argv(), 30.0)
-    return parse_status(rc, out, err)
+    status = parse_status(rc, out, err)
+    log.info("scanner check: rc=%s ok=%s error=%r\n%s", rc, status.ok, status.error, _tail((out + "\n" + err).strip()))
+    return status
 
 
 @dataclass
@@ -87,19 +91,24 @@ def eject_holder(driver: drv.Driver, *, runner_cls=ProcessRunner, timeout: float
     never a kill, and the answer is "power-cycle the scanner".
     """
     runner = runner_cls(drv.eject_argv(), drv.environment(driver))
+    log.info("eject: $ %s", " ".join(drv.eject_argv()))
     try:
         runner.start()
     except OSError as e:
+        log.error("eject: cannot start the driver: %s", e)
         return EjectResult(False, "internal", f"cannot start the driver: {e}")
     rc = runner.wait(timeout)
     if rc is None:
         runner.interrupt()
         runner.wait(60.0)
+        log.error("eject: no end after %.0f s, sent Ctrl-C\n%s", timeout, _tail(runner.output()))
         return EjectResult(False, "interrupted", runner.output(), True)
     out = runner.output()
     if rc == 0:
+        log.info("eject: ok\n%s", _tail(out))
         return EjectResult(True, detail=_tail(out))
     code, power = classify_failure(rc, out)
+    log.error("eject: failed rc=%s code=%s power_cycle=%s\n%s", rc, code, power, _tail(out))
     return EjectResult(False, code, _tail(out), power)
 
 
@@ -219,7 +228,7 @@ class ScanSession:
             paths.log_dir().mkdir(parents=True, exist_ok=True)
             stamp = time.strftime("%Y%m%d-%H%M%S")
             self._log_file = open(paths.log_dir() / f"{stamp}-{self.name}.log", "w", encoding="utf-8")
-            logs = sorted(paths.log_dir().glob("*.log"))
+            logs = sorted(paths.log_dir().glob("[0-9]*-*.log"))     # scan logs only, not filmdeck.log
             for old in logs[:-LOG_KEEP]:
                 old.unlink(missing_ok=True)
         except OSError:
@@ -231,9 +240,13 @@ class ScanSession:
             result = self._flow()
         except Exception as e:  # last resort: report instead of dying silently
             result = SessionResult("error", "internal", f"{type(e).__name__}: {e}", final_dir=self.final_dir)
-        finally:
-            if self._log_file:
-                self._log_file.close()
+            log.exception("scan %s: internal error", self.name)
+        summary = (f"== result: kind={result.kind} code={result.code!r} power_cycle={result.power_cycle} "
+                   f"images={result.images_total} new={result.images_new} detail={result.detail!r}")
+        self._log(summary)
+        log.info("scan %s: %s", self.name, summary)
+        if self._log_file:
+            self._log_file.close()
         self.result = result
         self._emit("finished", result=result)
 

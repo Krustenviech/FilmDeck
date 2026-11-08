@@ -10,6 +10,7 @@ without touching FilmDeck.
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 import subprocess
@@ -19,6 +20,8 @@ from pathlib import Path
 
 from . import paths
 from .config import Settings
+
+log = logging.getLogger(__name__)
 
 # --album and --position-offset exist from this release on.
 MIN_VERSION = (0, 2, 11)
@@ -77,6 +80,16 @@ def demo_enabled() -> bool:
 
 def locate(settings: Settings) -> Driver | None:
     """The driver to use, or None when there is none (or the folder is not a driver)."""
+    found = _locate(settings)
+    if found is None:
+        log.info("driver: none found (custom path: %r)", settings.driver_path or None)
+    else:
+        log.info("driver: %s at %s (%s)", found.version, found.root,
+                 "demo" if found.demo else "managed" if found.managed else "custom folder")
+    return found
+
+
+def _locate(settings: Settings) -> Driver | None:
     if demo_enabled():
         root = demo_root()
         return Driver(root, read_version(root) or "0.0.0", managed=False, demo=True)

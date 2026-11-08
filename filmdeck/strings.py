@@ -306,8 +306,8 @@ _t("err.export_failed.text",
    "The scan is finished, but the images could not be moved into the film folder. The originals are in the hidden "
    "“.driver” folder inside the film folder.\n\n{detail}")
 _t("err.internal.title", "Interner Fehler", "Internal error")
-_t("err.internal.text", "{detail}\n\nBitte das Protokoll unter ~/.local/share/filmdeck/logs/ mitschicken.",
-   "{detail}\n\nPlease send the log in ~/.local/share/filmdeck/logs/ along.")
+_t("err.internal.text", "{detail}\n\nBitte filmdeck.log und das neueste Protokoll unter ~/.local/share/filmdeck/logs/ mitschicken.",
+   "{detail}\n\nPlease send filmdeck.log and the newest log in ~/.local/share/filmdeck/logs/ along.")
 
 # ----------------------------------------------------------------------------- options
 _t("opt.title", "Optionen", "Options")

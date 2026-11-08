@@ -24,7 +24,7 @@ Es **invertiert, korrigiert und bearbeitet nichts**. Gescannt werden Negative; I
 Was das praktisch heißt:
 
 - Kein menschlicher Entwickler hat den Code Zeile für Zeile geprüft.
-- Es gibt rund 100 automatische Tests (gegen einen eingebauten *Demo-Treiber* und gegen den Quelltext des echten Treibers), und das AppImage hat einen Selbsttest. **Das ersetzt keinen echten Scan.** Stand Version 0.1.0 wurde das Programm **noch nicht mit einem echten Scanner ausgeführt**; den ersten Lauf macht der Besitzer. Siehe [Stand](#stand).
+- Es gibt rund 100 automatische Tests (gegen einen eingebauten *Demo-Treiber* und gegen den Quelltext des echten Treibers), und das AppImage hat einen Selbsttest. **Das ersetzt keinen echten Scan.** Stand Version 0.1.1 wurde das Programm **noch nicht mit einem echten Scanner ausgeführt**; den ersten Lauf macht der Besitzer. Siehe [Stand](#stand).
 - Den Scanner bewegt der Treiber, nicht dieses Programm. FilmDeck hält sich an die Sicherheitsregeln des Treibers (siehe [Sicherheit](#sicherheit)); wenn etwas seltsam aussieht, gilt zuerst die Dokumentation des Treibers.
 
 ---
@@ -112,7 +112,7 @@ Gleiches Formular; *Bilder des 1. Streifens* gilt für den ersten Streifen. Nach
 *Listen:* deine Filme und Kameras.
 *Treiber:* Version und Ort, jetzt nach Update suchen, vorige Version wiederherstellen, eigenen Treiberordner wählen, Hardware-Bericht (`of135i doctor`, nur lesend), USB-Einrichtung.
 
-Einstellungen liegen in `~/.config/filmdeck/settings.json`, Protokolle in `~/.local/share/filmdeck/logs/`. Wenn du ein Problem meldest, hänge das neueste Protokoll an.
+Einstellungen liegen in `~/.config/filmdeck/settings.json`. Protokolle liegen in `~/.local/share/filmdeck/logs/`: `filmdeck.log` hält Start, gefundenen Treiber, Scanner-Prüfungen, Auswerfen, Update-Prüfungen und Abstürze fest (sie bleibt kurz oder sogar leer, wenn nichts schiefging), und jeder Scan schreibt eine eigene Datei `<Datum>-<Name>.log` mit den Treiberbefehlen, der Treiberausgabe und dem Ergebnis (die neuesten 20 bleiben erhalten). Wenn du ein Problem meldest, hänge `filmdeck.log` und das neueste Scan-Protokoll an.
 
 ---
 
@@ -144,7 +144,7 @@ FilmDeck startet den Treiber als eigenen Prozess und hält sich an seine Regeln:
 | *Laden fehlgeschlagen* / *unsicher* | Scanner aus- und einschalten, Halter herausziehen, neu versuchen; klemmt er, nach dem Neustart *Auswerfen …* benutzen |
 | AppImage startet nicht (FUSE) | `APPIMAGE_EXTRACT_AND_RUN=1 ./FilmDeck-*.AppImage` |
 | Qt-Fehler zum `xcb`-Plugin | `xcb-util-cursor` installieren (`libxcb-cursor0` bei Debian/Ubuntu) |
-| Alles andere | Optionen → Treiber → *Hardware-Bericht* und das Protokoll in `~/.local/share/filmdeck/logs/` |
+| Alles andere | Optionen → Treiber → *Hardware-Bericht* und die Protokolle in `~/.local/share/filmdeck/logs/` (`filmdeck.log` + das neueste Scan-Protokoll) |
 
 ---
 

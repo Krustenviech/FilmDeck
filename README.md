@@ -22,7 +22,7 @@ It does **not** invert, colour-correct or edit anything. Scans are negatives; in
 What that means in practice:
 
 - No human developer has reviewed the code line by line.
-- There are about 100 automated tests (they run against a built-in *demo driver* and against the real driver's source code), and the AppImage includes a self-test. **None of this replaces a real scan.** As of version 0.1.0 the program has **not yet been run against a real scanner**; that first run is done by the owner. See [Status](#status).
+- There are about 100 automated tests (they run against a built-in *demo driver* and against the real driver's source code), and the AppImage includes a self-test. **None of this replaces a real scan.** As of version 0.1.1 the program has **not yet been run against a real scanner**; that first run is done by the owner. See [Status](#status).
 - The scanner is moved by the driver, not by this program. FilmDeck follows the driver's safety rules (see [Safety](#safety)), but if something looks wrong, trust the driver's documentation first.
 
 ---
@@ -110,7 +110,7 @@ Same form; *Frames of strip 1* applies to the first strip. After each strip a di
 *Lists:* your films and cameras.
 *Driver:* version and location, check for update now, restore the previous version, choose your own driver folder, hardware report (`of135i doctor`, read-only), USB set-up commands.
 
-Settings are stored in `~/.config/filmdeck/settings.json`, logs in `~/.local/share/filmdeck/logs/`. If you report a problem, attach the newest log.
+Settings are stored in `~/.config/filmdeck/settings.json`. Logs are in `~/.local/share/filmdeck/logs/`: `filmdeck.log` records the start, driver found, scanner checks, eject, update checks and crashes (it stays short or even empty when nothing went wrong), and every scan writes its own file `<date>-<name>.log` with the driver commands, the driver's output and the result (the newest 20 are kept). If you report a problem, attach `filmdeck.log` and the newest scan log.
 
 ---
 
@@ -142,7 +142,7 @@ FilmDeck runs the driver as a separate process and follows its rules:
 | *Loading failed* / *unsafe* | Power-cycle the scanner, pull the holder out, try again; if it is stuck use *Eject …* after the power-cycle |
 | AppImage does not start (FUSE) | `APPIMAGE_EXTRACT_AND_RUN=1 ./FilmDeck-*.AppImage` |
 | Qt error about the `xcb` plugin | install `xcb-util-cursor` (`libxcb-cursor0` on Debian/Ubuntu) |
-| Anything else | Options → Driver → *Hardware report*, and the log in `~/.local/share/filmdeck/logs/` |
+| Anything else | Options → Driver → *Hardware report*, and the logs in `~/.local/share/filmdeck/logs/` (`filmdeck.log` + the newest scan log) |
 
 ---
 

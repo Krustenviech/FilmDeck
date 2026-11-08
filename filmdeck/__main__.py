@@ -65,6 +65,8 @@ def main(argv: list[str] | None = None) -> int:
 
     settings = Settings.load()
     i18n.set_language(settings.language)
+    logging.info("%s %s started (python %s, %s)", APP_NAME, __version__, sys.version.split()[0],
+                 os.environ.get("APPIMAGE") or "not an AppImage")
     window = MainWindow(settings)
     window.showMaximized()
     return app.exec()
