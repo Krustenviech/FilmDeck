@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "filmdeck"
+dynamic = ["version"]
+description = "Simple scan program for the Plustek OpticFilm 135i (35 mm film) on Linux and the Steam Deck"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "PySide6-Essentials>=6.5",
+    "numpy",
+    "pillow",
+    "tifffile",
+    "pyusb",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.scripts]
+filmdeck = "filmdeck.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["filmdeck*"]
+
+[tool.setuptools.dynamic]
+version = { attr = "filmdeck.__version__" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

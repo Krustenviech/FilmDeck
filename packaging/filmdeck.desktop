@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=FilmDeck
+GenericName=Film scanner
+Comment=Scan 35 mm film with the Plustek OpticFilm 135i
+Comment[de]=35-mm-Film mit dem Plustek OpticFilm 135i scannen
+Exec=filmdeck
+Icon=filmdeck
+Terminal=false
+Categories=Graphics;Scanning;
+StartupWMClass=filmdeck
