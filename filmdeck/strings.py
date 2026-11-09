@@ -240,6 +240,37 @@ _t("res.partial.text",
    "{new} neue Bilder gespeichert. Nicht sicher erkannt wurden die Bilder Nr. {missing}; ihre Nummern bleiben "
    "reserviert.\n{folder}",
    "{new} new images saved. The images no. {missing} could not be verified; their numbers stay reserved.\n{folder}")
+_t("miss.title.one", "Bild {numbers} fehlt", "Image {numbers} is missing")
+_t("miss.title.many", "Bilder {numbers} fehlen", "Images {numbers} are missing")
+_t("miss.reason.lead",
+   "Bild {number} wurde gescannt, aber nicht gespeichert: Der Anfang der Bildöffnung lag zu nah am Rand des Scanbereichs.",
+   "Image {number} was scanned but not saved: the start of the film opening was too close to the edge of the scan area.")
+_t("miss.reason.trail",
+   "Bild {number} wurde gescannt, aber nicht gespeichert: Das Ende der Bildöffnung lag zu nah am Rand des Scanbereichs.",
+   "Image {number} was scanned but not saved: the end of the film opening was too close to the edge of the scan area.")
+_t("miss.reason.both",
+   "Bild {number} wurde gescannt, aber nicht gespeichert: Die Bildöffnung lag auf beiden Seiten zu nah am Rand.",
+   "Image {number} was scanned but not saved: the film opening was too close to the edge on both sides.")
+_t("miss.reason.other",
+   "Bild {number} wurde gescannt, aber nicht gespeichert: Die Bildöffnung wurde nicht sicher erkannt ({reason}).",
+   "Image {number} was scanned but not saved: the film opening was not found reliably ({reason}).")
+_t("miss.reserved.one", "Die Nummer bleibt reserviert.", "The number stays reserved.")
+_t("miss.reserved.many", "Die Nummern bleiben reserviert.", "The numbers stay reserved.")
+_t("miss.overscan",
+   "Der ganze Scan von Bild {number} (nicht zugeschnitten) liegt als {file} im Filmordner.",
+   "The whole scan of image {number} (not cropped) is in the film folder as {file}.")
+_t("miss.advice",
+   "Dein Scanner sitzt etwa {shift} mm {direction} als vom Treiber angenommen (gemessen an {frames} Bildern). "
+   "Stelle unter Optionen → Scan „Bildlage verschieben“ auf {suggested} mm und scanne neu.",
+   "Your scanner sits about {shift} mm {direction} than the driver assumes (measured over {frames} images). "
+   "Set “Shift the frame position” in Options → Scan to {suggested} mm and scan again.")
+_t("miss.earlier", "früher", "earlier")
+_t("miss.later", "später", "later")
+_t("miss.hint_generic",
+   "Passiert das öfter, hilft „Bildlage verschieben“ unter Optionen → Scan.",
+   "If this happens often, “Shift the frame position” in Options → Scan helps.")
+_t("miss.apply", "Bildlage {value} mm übernehmen", "Use frame shift {value} mm")
+_t("miss.applied", "Bildlage auf {value} mm gestellt", "Frame shift set to {value} mm")
 _t("res.cancelled.title", "Scan abgebrochen", "Scan cancelled")
 _t("res.cancelled.text", "Der Scan wurde beendet. {new} Bilder sind gespeichert.", "The scan was stopped. {new} images are saved.")
 _t("res.cancelled.power",
@@ -349,8 +380,9 @@ _t("opt.fast_next_hint",
    "the program automatically does the full load.")
 _t("opt.offset", "Bildlage verschieben", "Shift the frame position")
 _t("opt.offset_default", "Voreinstellung des Treibers", "Driver default")
-_t("opt.offset_hint", "Nur ändern, wenn die Bildränder bei allen Bildern gleich verschoben sind.",
-   "Only change this if the image edges are shifted the same way on every frame.")
+_t("opt.offset_hint",
+   "−3 bis +3 mm. Negativ: Scanbereich beginnt früher. Den passenden Wert nennt FilmDeck, wenn ein Bild fehlt.",
+   "−3 to +3 mm. Negative: the scan area starts earlier. FilmDeck names the right value when an image is missing.")
 
 _t("opt.preview", "Vorschaubilder (JPEG)", "Preview images (JPEG)")
 _t("opt.preview.off", "Keine", "None")

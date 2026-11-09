@@ -100,7 +100,7 @@ class FrameToggles(QWidget):
             b = QPushButton(str(n))
             b.setCheckable(True)
             b.setChecked(True)
-            b.setMinimumWidth(54)
+            b.setMinimumWidth(40)
             b.toggled.connect(lambda on, n=n: self._toggled(n, on))
             lay.addWidget(b)
             self._buttons[n] = b

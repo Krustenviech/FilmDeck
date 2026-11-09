@@ -91,16 +91,12 @@ class MainWindow(QMainWindow):
         self.mode_group = QButtonGroup(self)
         for i, b in enumerate((self.btn_mode_strip, self.btn_mode_film)):
             self.mode_group.addButton(b, i)
-            b.setMinimumWidth(190)
         self.btn_mode_strip.setChecked(True)
         self.mode_group.idClicked.connect(self._on_mode)
         self.btn_eject = QPushButton()
         self.btn_eject.clicked.connect(self._ask_eject)
         for w in (self.lb_dot, self.lb_scanner, self.btn_check, self.btn_eject):
             top.addWidget(w)
-        top.addStretch(1)
-        top.addWidget(self.btn_mode_strip)
-        top.addWidget(self.btn_mode_film)
         top.addStretch(1)
         top.addWidget(self.btn_options)
         root.addLayout(top)
@@ -114,7 +110,7 @@ class MainWindow(QMainWindow):
         self.btn_banner_notes = QPushButton()
         self.btn_banner_action = QPushButton()
         self.btn_banner_close = QPushButton("✕")
-        self.btn_banner_close.setFixedWidth(56)
+        self.btn_banner_close.setFixedWidth(42)
         bl.addWidget(self.lb_banner, 1)
         for b in (self.btn_banner_notes, self.btn_banner_action, self.btn_banner_close):
             bl.addWidget(b)
@@ -162,6 +158,12 @@ class MainWindow(QMainWindow):
         panel.setFixedWidth(540)
         outer = QVBoxLayout(panel)
         outer.setContentsMargins(4, 4, 4, 4)
+        modes = QHBoxLayout()                       # single strip / whole film: above everything else
+        modes.setContentsMargins(14, 12, 14, 2)
+        modes.setSpacing(8)
+        modes.addWidget(self.btn_mode_strip, 1)
+        modes.addWidget(self.btn_mode_film, 1)
+        outer.addLayout(modes)
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QFrame.NoFrame)
@@ -922,6 +924,24 @@ class MainWindow(QMainWindow):
             self._show_power_cycle()
         else:
             self._check_scanner()
+        if result.kind == "partial":
+            self._explain_missing(result)
+
+    def _explain_missing(self, result: SessionResult) -> None:
+        info = messages.describe_missing(result)
+        if info is None:
+            return
+        title, text, advice = info
+        buttons = [("ok", tr("dlg.ok"), "primary")]
+        if advice is not None:
+            buttons.insert(0, ("apply", tr("miss.apply", value=messages.mm(advice.suggested, signed=True)), ""))
+        self._show_dialog(InfoDialog(self, title, text, buttons, level="warn"),
+                          lambda key: self._apply_offset(advice) if key == "apply" and advice else None)
+
+    def _apply_offset(self, advice) -> None:
+        self.settings.position_offset_mm = advice.suggested
+        self.settings.save()
+        self._set_status(tr("miss.applied", value=messages.mm(advice.suggested, signed=True)), "", "ok")
 
     def _show_power_cycle(self) -> None:
         dlg = InfoDialog(self, tr("dlg.power.title"), tr("dlg.power.text"),

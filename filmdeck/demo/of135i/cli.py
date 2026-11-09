@@ -7,7 +7,9 @@ provoke the situations a real scanner produces:
   OF135I_DEMO_STATE     file that remembers "the scanner has been loaded" (default: temp dir)
   OF135I_DEMO_SCENARIO  comma separated: no_scanner, no_permission, no_magazine, unsafe, busy, eject_fail,
                         cold (a --next-strip is refused), load_fail, coverage_fail:K,
-                        empty_from:K, scan_fail:K
+                        empty_from:K, scan_fail:K, early:MM (this "unit" sits MM early in the window, like a
+                        real scanner whose holder is off the model; --position-offset corrects it),
+                        tight:K (frame K sits another 0.4 mm early: refused for a too small leading margin)
 
 The album numbering is a port of of135i/digitize.py (album_plan / album_sync, MIT) so the
 index.json that FilmDeck reads has the real layout; tests compare it with the real driver.
@@ -337,6 +339,9 @@ def cmd_digitize(args) -> int:
     per_frame, images, code = [], [], 0
     empty_from = int(sc["empty_from"]) if sc.get("empty_from") else None
     cov_fail = int(sc["coverage_fail"]) if sc.get("coverage_fail") else None
+    early = float(sc["early"]) if sc.get("early") else 0.0
+    tight = int(sc["tight"]) if sc.get("tight") else None
+    offset = float(args.position_offset or 0.0)
     fail_at = int(sc["scan_fail"]) if sc.get("scan_fail") else None
     failed = False
     try:
@@ -352,13 +357,23 @@ def cmd_digitize(args) -> int:
                 print(f"stopping: empty aperture at frame {f} after film; the remaining frames are skipped",
                       flush=True)
                 break
+            # the lines the real driver prints (of135i/device.py, cli.py); FilmDeck reads the margins from them
+            planned_lead, planned_trail = 0.75, 2.0 + 0.1 * f
+            lead, trail = planned_lead - early - offset - (0.4 if tight == f else 0.0), planned_trail + early + offset
+            print(f"INFO of135i: scanning frame {f} @ {args.dpi} dpi (dual-light pass)", flush=True)
+            print(f"INFO of135i: dual overscan frame {f} ({args.dpi} dpi): FEEDL={6519 + 10753 * (f - 1)} chunks=19 "
+                  f"wire_lines=1862 margins lead={planned_lead:.3f} trail={planned_trail:.3f} mm", flush=True)
             write_tiff(rdir / f"f{f}.overscan.tiff", synthetic(f, h + 20, w + 20), args.dpi)
-            if cov_fail == f:
-                print(f"warning: frame {f}: coverage not verified; only the overscan file was written "
-                      f"(of135i recrop can retry)", flush=True)
-                per_frame.append({"frame": f, "film_present": True, "coverage_reason": "coverage not verified"})
+            if cov_fail == f or lead < 0.15:
+                reason = ("IR: leading margin below min_margin_mm (0.15 mm); visible: no aperture found in profile"
+                          if lead < 0.15 else "IR: aperture not found")
+                print(f"aperture coverage: NOT verified \u2014 {reason}. Kept the full overscan frame(s); no main "
+                      f"negative written for this frame.", flush=True)
+                per_frame.append({"frame": f, "film_present": True, "coverage_reason": reason})
                 code = 4
                 continue
+            print(f"aperture coverage: VERIFIED (source: ir) \u2014 margins lead {lead:.3f} mm, trail {trail:.3f} mm",
+                  flush=True)
             if args.ir:
                 write_tiff(rdir / f"f{f}-ir.overscan.tiff", synthetic(f, h + 20, w + 20, ir=True), args.dpi)
                 write_tiff(rdir / f"f{f}-ir.tiff", synthetic(f, h, w, ir=True), args.dpi)

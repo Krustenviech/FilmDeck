@@ -22,7 +22,7 @@ It does **not** invert, colour-correct or edit anything. Scans are negatives; in
 What that means in practice:
 
 - No human developer has reviewed the code line by line.
-- There are about 100 automated tests (they run against a built-in *demo driver* and against the real driver's source code), and the AppImage includes a self-test. **None of this replaces a real scan.** As of version 0.1.1 the program has **not yet been run against a real scanner**; that first run is done by the owner. See [Status](#status).
+- There are about 100 automated tests (they run against a built-in *demo driver* and against the real driver's source code), and the AppImage includes a self-test. **None of this replaces a real scan.** Up to now the owner has run **one real strip** with it (6 frames, colour, 600 dpi) and found it working; everything else that needs the scanner is untested. See [Status](#status).
 - The scanner is moved by the driver, not by this program. FilmDeck follows the driver's safety rules (see [Safety](#safety)), but if something looks wrong, trust the driver's documentation first.
 
 ---
@@ -33,7 +33,8 @@ What that means in practice:
 |---|---|
 | Works, tested automatically | Strip scan and whole-film scan against the demo driver (including chosen frames, several strips, cancel, errors, eject), file naming and numbering, 48/24/16/8-bit conversion, driver update/rollback logic, all texts in both languages, the AppImage (built and self-tested) |
 | Checked against the real driver's source | Every command line FilmDeck builds is accepted by the real `of135i` argument parser; the `wrote …` output format and the prompts are matched against the driver's code |
-| **Not yet tested** | Anything that needs the real scanner: loading, scanning, reinsert prompt, cancel, eject |
+| Tested on a real scanner (once, 2026-11-08) | One colour strip of 6 frames at 600 dpi, 48 bit: start-up, driver download, USB rule, loading with the reinsert prompt, scanning, numbering and files. One frame was refused by the driver (margin too small); the explanation and the offset advice in the program come from that scan |
+| **Not yet tested on a real scanner** | Whole film with several strips, black & white, 3600 / 7200 dpi, 24 / 16 / 8 bit on real scans, cancel, eject |
 | Not supported | Other scanners; inversion / editing; other CPU architectures (the AppImage is x86_64) |
 
 ---
@@ -63,7 +64,7 @@ Run from source instead: `pip install .` and `filmdeck` (needs Python 3.12 or ne
 
 ## Using it
 
-Top bar: scanner status (green = ready), **Check scanner**, **Eject …**, the mode switch **Single strip / Whole film**, and **Options**.
+Top bar: scanner status (green = ready), **Check scanner**, **Eject …** and **Options**. The mode switch **Single strip / Whole film** is at the top of the left panel, above the name.
 
 **Single strip**
 
@@ -90,6 +91,7 @@ Same form; *Frames of strip 1* applies to the first strip. After each strip a di
     26-11-Kodak_Gold-Nikon_F3_01_ir.tiff     infrared channel (C-41, if enabled; NegPy recognises it)
     26-11-Kodak_Gold-Nikon_F3_02.tiff
     ...
+    26-11-Kodak_Gold-Nikon_F3_04_overscan.tiff   only if the driver refused to crop frame 4 (see below)
     .previews/…_01.jpg                       small JPEG previews (optional)
     .driver/                                 the driver's own files; do not touch
 ```
@@ -116,7 +118,7 @@ Settings are stored in `~/.config/filmdeck/settings.json`. Logs are in `~/.local
 
 ## Driver updates
 
-At start-up FilmDeck asks GitHub for the newest release (or `master`, if chosen) of cgillinger's driver. If there is a newer one, a banner appears with **What's new** (release notes) and **Update now**. The new version is downloaded, unpacked safely, **started once as a test**, and only then becomes the active one; the previous version is kept so *Options → Driver → Restore the previous version* can undo it. Nothing is updated while a scan is running. A driver in a folder of your own is never touched. FilmDeck needs driver version 0.2.11 or newer.
+At start-up FilmDeck asks GitHub for the newest release (or `master`, if chosen) of cgillinger's driver. If there is a newer one, a banner appears with **What's new** (release notes) and **Update now**. The new version is downloaded, unpacked safely, **started once as a test**, and only then becomes the active one; the previous version is kept so *Options → Driver → Restore the previous version* can undo it. Nothing is updated while a scan is running. A driver in a folder of your own is never touched. FilmDeck needs driver version 0.2.11 or newer; it has been checked against the source of 0.2.11 and 0.2.12.
 
 ---
 
@@ -139,6 +141,7 @@ FilmDeck runs the driver as a separate process and follows its rules:
 | *No USB permission* | Install the udev rule (`packaging/install-udev.sh`), re-plug the scanner |
 | *No scanner found* | Switch the scanner on, check cable and power, press *Check scanner* |
 | *Scanner busy* | Another driver process or program uses it; close it |
+| *Image NN is missing* after a scan | The driver scanned the frame but would not crop it: the film opening was too close to the edge of the scan window (less than 0.15 mm). The number stays reserved and the uncropped scan is saved as `…_NN_overscan.tiff`. FilmDeck measures how far your scanner is off and offers the *Shift the frame position* value that fixes it (Options → Scan; negative = scan area starts earlier) |
 | *Loading failed* / *unsafe* | Power-cycle the scanner, pull the holder out, try again; if it is stuck use *Eject …* after the power-cycle |
 | AppImage does not start (FUSE) | `APPIMAGE_EXTRACT_AND_RUN=1 ./FilmDeck-*.AppImage` |
 | Qt error about the `xcb` plugin | install `xcb-util-cursor` (`libxcb-cursor0` on Debian/Ubuntu) |

@@ -8,7 +8,7 @@ import pytest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 pytest.importorskip("PySide6")
 
-from PySide6.QtWidgets import QApplication, QCheckBox  # noqa: E402
+from PySide6.QtWidgets import QApplication, QCheckBox, QLabel  # noqa: E402
 
 from filmdeck import i18n  # noqa: E402
 from filmdeck.core.config import Settings  # noqa: E402
@@ -275,3 +275,40 @@ def test_selftest_passes_with_the_demo_driver(app):
     assert selftest.run(lines.append) in (0, 1)
     assert not any("demo scan" in p and "PROBLEM" in p for p in lines), lines
     assert any(l.startswith("window: ok") for l in lines) and any(l.startswith("demo scan: ok, 2 images") for l in lines), lines
+
+
+def test_refused_frame_is_explained_and_the_advised_offset_can_be_applied(app, window, monkeypatch):
+    monkeypatch.setenv("OF135I_DEMO_SCENARIO", "early:0.5,tight:3")
+    window.frames.set_selected([1, 2, 3, 4])
+    window.cb_dpi.setCurrentIndex(window.cb_dpi.findData(600))
+    window.btn_start.click()
+    shown = []
+
+    def answer(dlg):
+        if "go" in dlg._buttons:
+            press(dlg, "go")
+        else:
+            shown.append(dlg)
+
+    assert pump(app, lambda: window._session is None and bool(shown), 30, answer=answer), window.lb_status.text()
+    dlg = shown[0]
+    text = "\n".join(label.text() for label in dlg.findChildren(QLabel))
+    assert dlg.windowTitle() == "Image 03 is missing"
+    assert "start of the film opening was too close" in text and "_03_overscan.tiff" in text
+    assert "about 0.5 mm earlier than the driver assumes" in text and "to −0.5 mm" in text
+    assert window.settings.position_offset_mm is None and "apply" in dlg._buttons
+    press(dlg, "apply")
+    assert window.settings.position_offset_mm == -0.5
+    assert window.lb_status.text() == "Frame shift set to −0.5 mm"
+    from filmdeck.core.config import Settings as _S
+    assert _S.load().position_offset_mm == -0.5            # saved, not only in memory
+
+
+def test_mode_switch_sits_in_the_settings_panel_above_the_name(app, window):
+    form_panel = window.btn_mode_strip.parentWidget()
+    assert form_panel is window.btn_mode_film.parentWidget()
+    assert window.ed_name.window() is window and form_panel.isAncestorOf(window.ed_name)
+    assert window.btn_mode_strip.mapTo(window, window.btn_mode_strip.rect().topLeft()).y() < \
+        window.ed_name.mapTo(window, window.ed_name.rect().topLeft()).y()
+    assert window.btn_options.mapTo(window, window.btn_options.rect().topLeft()).y() < \
+        window.btn_mode_strip.mapTo(window, window.btn_mode_strip.rect().topLeft()).y()

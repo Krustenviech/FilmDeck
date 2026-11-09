@@ -9,6 +9,7 @@ import pytest
 
 from filmdeck import i18n
 from filmdeck.core.config import BIT_CHOICES
+from filmdeck.core.margins import REFUSAL_KINDS
 from filmdeck.strings import STRINGS
 from filmdeck.ui.messages import ERROR_CODES
 
@@ -32,6 +33,8 @@ def _expand(node: ast.expr) -> list[str]:
             return [text.replace("\0code\0", c) for c in ERROR_CODES]
         if "\0bits\0" in text:
             return [text.replace("\0bits\0", str(b)) for b in BIT_CHOICES]
+        if "\0kind\0" in text:
+            return [text.replace("\0kind\0", k) for k in REFUSAL_KINDS]
     return []
 
 

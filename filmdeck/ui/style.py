@@ -24,7 +24,9 @@ OK = "#5dbb7a"
 WARN = "#e3a63b"
 ERR = "#e0645c"
 
-TOUCH = 52                # minimum height of anything that is pressed
+TOUCH = 39                # height of the big buttons (Start, Cancel); desktop sizes, 75 % of the first version
+BUTTON_H = TOUCH - 6      # other buttons
+FIELD_H = TOUCH - 9       # entry fields, drop-downs, check boxes
 
 
 def apply(app: QApplication) -> None:
@@ -86,7 +88,7 @@ def _check_url() -> str:
 def stylesheet(arrow_url: str = "", check_url: str = "") -> str:
     extra = ""
     if arrow_url:
-        extra += f"\nQComboBox::down-arrow {{ image: url({arrow_url}); width: 24px; height: 24px; }}"
+        extra += f"\nQComboBox::down-arrow {{ image: url({arrow_url}); width: 18px; height: 18px; }}"
     if check_url:
         extra += f"\nQCheckBox::indicator:checked {{ image: url({check_url}); }}"
     return _STYLESHEET + extra
@@ -105,41 +107,41 @@ QFrame#banner[level="ok"] {{ background: #1d3626; border-color: {OK}; }}
 
 QPushButton, QToolButton {{
     background: {PANEL_HI}; border: 1px solid {BORDER}; border-radius: 8px;
-    min-height: {TOUCH - 8}px; padding: 4px 16px;
+    min-height: {BUTTON_H}px; padding: 3px 12px;
 }}
 QPushButton:hover, QToolButton:hover {{ border-color: {ACCENT}; }}
 QPushButton:pressed, QToolButton:pressed {{ background: {BORDER}; }}
 QPushButton:disabled, QToolButton:disabled {{ color: {MUTED}; background: {PANEL}; border-color: {PANEL_HI}; }}
 QPushButton:checked, QToolButton:checked {{ background: {ACCENT}; color: {ACCENT_TEXT}; border-color: {ACCENT}; font-weight: 600; }}
-QPushButton#primary {{ background: {ACCENT}; color: {ACCENT_TEXT}; border: none; font-size: 15pt; font-weight: 700;
-    min-height: {TOUCH}px; padding: 4px 28px; }}
+QPushButton#primary {{ background: {ACCENT}; color: {ACCENT_TEXT}; border: none; font-size: 14pt; font-weight: 700;
+    min-height: {TOUCH}px; padding: 3px 21px; }}
 QPushButton#primary:disabled {{ background: {PANEL_HI}; color: {MUTED}; }}
-QPushButton#danger {{ background: {ERR}; color: #2a0b09; border: none; font-size: 15pt; font-weight: 700;
-    min-height: {TOUCH}px; padding: 4px 28px; }}
-QToolButton#segment {{ min-width: 52px; }}
+QPushButton#danger {{ background: {ERR}; color: #2a0b09; border: none; font-size: 14pt; font-weight: 700;
+    min-height: {TOUCH}px; padding: 3px 21px; }}
+QToolButton#segment {{ min-width: 39px; }}
 
 QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox, QPlainTextEdit, QTextBrowser, QListWidget {{
-    background: #16181b; border: 1px solid {BORDER}; border-radius: 8px; padding: 4px 10px;
+    background: #16181b; border: 1px solid {BORDER}; border-radius: 8px; padding: 3px 8px;
     selection-background-color: {ACCENT}; selection-color: {ACCENT_TEXT};
 }}
-QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox {{ min-height: {TOUCH - 12}px; }}
+QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox {{ min-height: {FIELD_H}px; }}
 QLineEdit:disabled, QComboBox:disabled, QSpinBox:disabled, QDoubleSpinBox:disabled {{ color: {MUTED}; }}
 QLineEdit:focus, QComboBox:focus {{ border-color: {ACCENT}; }}
-QComboBox::drop-down {{ width: 38px; border: none; }}
+QComboBox::drop-down {{ width: 28px; border: none; }}
 QComboBox QAbstractItemView {{ background: {PANEL}; selection-background-color: {ACCENT};
-    selection-color: {ACCENT_TEXT}; min-height: {TOUCH - 12}px; }}
-QComboBox QAbstractItemView::item {{ min-height: {TOUCH - 12}px; }}
-QCheckBox {{ spacing: 12px; min-height: {TOUCH - 12}px; }}
-QCheckBox::indicator {{ width: 26px; height: 26px; border: 1px solid {BORDER}; border-radius: 6px; background: #16181b; }}
+    selection-color: {ACCENT_TEXT}; min-height: {FIELD_H}px; }}
+QComboBox QAbstractItemView::item {{ min-height: {FIELD_H}px; }}
+QCheckBox {{ spacing: 9px; min-height: {FIELD_H}px; }}
+QCheckBox::indicator {{ width: 20px; height: 20px; border: 1px solid {BORDER}; border-radius: 5px; background: #16181b; }}
 QCheckBox::indicator:checked {{ background: {ACCENT}; border-color: {ACCENT}; }}
-QProgressBar {{ background: #16181b; border: 1px solid {BORDER}; border-radius: 8px; height: 22px; text-align: center; }}
-QProgressBar::chunk {{ background: {ACCENT}; border-radius: 7px; }}
+QProgressBar {{ background: #16181b; border: 1px solid {BORDER}; border-radius: 8px; height: 16px; text-align: center; }}
+QProgressBar::chunk {{ background: {ACCENT}; border-radius: 5px; }}
 QTabWidget::pane {{ border: 1px solid {BORDER}; border-radius: 8px; top: -1px; background: {PANEL}; }}
-QTabBar::tab {{ background: {BG}; padding: 12px 22px; border: 1px solid {BORDER}; border-bottom: none;
-    border-top-left-radius: 8px; border-top-right-radius: 8px; min-height: 28px; }}
+QTabBar::tab {{ background: {BG}; padding: 9px 16px; border: 1px solid {BORDER}; border-bottom: none;
+    border-top-left-radius: 8px; border-top-right-radius: 8px; min-height: 21px; }}
 QTabBar::tab:selected {{ background: {PANEL}; color: {ACCENT}; font-weight: 600; }}
-QScrollBar:vertical {{ background: {BG}; width: 22px; margin: 0; }}
-QScrollBar::handle:vertical {{ background: {BORDER}; border-radius: 9px; min-height: 48px; margin: 2px; }}
+QScrollBar:vertical {{ background: {BG}; width: 16px; margin: 0; }}
+QScrollBar::handle:vertical {{ background: {BORDER}; border-radius: 6px; min-height: 36px; margin: 2px; }}
 QScrollBar::add-line, QScrollBar::sub-line {{ height: 0; width: 0; }}
 QListWidget::item {{ border-radius: 8px; padding: 4px; }}
 QListWidget::item:selected {{ background: {PANEL_HI}; border: 1px solid {ACCENT}; }}

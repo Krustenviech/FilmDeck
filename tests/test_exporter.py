@@ -82,7 +82,7 @@ def test_missing_frame_reserves_number(tmp_path, monkeypatch):
     assert p.returncode == 4
     r = run_export(stage, "film", tmp_path / "final")
     assert [i.number for i in r.images] == [1, 3] and [(m.number, m.reason) for m in r.missing] == [
-        (2, "coverage not verified")]
+        (2, "IR: aperture not found")]
     # the overscan file of the undelivered frame must survive (recrop needs it)
     assert (stage / "roll-001" / "f2.overscan.tiff").exists()
 
@@ -95,3 +95,49 @@ def test_no_index_and_stale_partials(tmp_path):
                               keep_overscan=False, preview_size=0)
     assert not r.index_found and not r.images
     assert (final / "x.tiff.partial").exists()        # nothing to do without an index: touch nothing
+
+
+def _stage_with_refused_frame(tmp_path, monkeypatch, scenario="coverage_fail:2"):
+    import subprocess
+    from filmdeck.core import driver as drv
+    from filmdeck.core.config import Settings
+    monkeypatch.setenv("OF135I_DEMO_SCENARIO", scenario)
+    monkeypatch.setenv("FILMDECK_DEMO", "1")
+    monkeypatch.setenv("OF135I_DEMO_STATE", str(tmp_path / "st"))
+    monkeypatch.setenv("OF135I_DEMO_SPEED", "0")
+    d = drv.locate(Settings())
+    stage = tmp_path / "stage"
+    p = subprocess.run(drv.digitize_argv(drv.DigitizeOptions(str(stage), "film", "1-3", 600, True)),
+                       env=drv.environment(d), input="\n", capture_output=True, text=True)
+    assert p.returncode == 4
+    return stage
+
+
+def test_full_scan_of_a_refused_frame_is_published_not_cropped(tmp_path, monkeypatch):
+    import tifffile
+    stage = _stage_with_refused_frame(tmp_path, monkeypatch)
+    r = run_export(stage, "film", tmp_path / "final")
+    (m,) = r.missing
+    assert m.number == 2 and m.overscan == tmp_path / "final" / "film_02_overscan.tiff"
+    assert m.overscan.stat().st_ino == (stage / "roll-001" / "f2.overscan.tiff").stat().st_ino   # 48 bit: a hard link
+    assert not (tmp_path / "final" / "film_02.tiff").exists()                                    # the number stays free
+    assert tifffile.imread(str(m.overscan)).shape[:2] == tifffile.imread(str(stage / "roll-001" / "f2.overscan.tiff")).shape[:2]
+    assert (stage / "roll-001" / "f2.overscan.tiff").exists()                                    # recrop still has its input
+    again = run_export(stage, "film", tmp_path / "final")                                        # next strip: nothing breaks
+    assert again.missing[0].overscan == m.overscan and not again.warnings
+
+
+def test_full_scan_follows_the_chosen_bit_depth(tmp_path, monkeypatch):
+    import tifffile
+    stage = _stage_with_refused_frame(tmp_path, monkeypatch)
+    r = exporter.export_album(stage, "film", tmp_path / "final", bits=8, export_ir=True, keep_overscan=False,
+                              preview_size=0)
+    arr = tifffile.imread(str(r.missing[0].overscan))
+    assert arr.dtype.name == "uint8" and arr.ndim == 2          # 8 bit = grey
+
+
+def test_no_full_scan_file_means_no_published_copy(tmp_path, monkeypatch):
+    stage = _stage_with_refused_frame(tmp_path, monkeypatch)
+    (stage / "roll-001" / "f2.overscan.tiff").unlink()
+    r = run_export(stage, "film", tmp_path / "final")
+    assert r.missing[0].overscan is None and not list((tmp_path / "final").glob("*overscan*"))

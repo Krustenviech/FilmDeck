@@ -28,6 +28,7 @@ from pathlib import Path
 from . import driver as drv
 from . import exporter, paths
 from .config import Settings
+from .margins import MarginTracker, OffsetAdvice
 from .parser import ScannerStatus, classify_failure, classify_line, parse_status
 from .runner import ProcessRunner
 
@@ -53,6 +54,8 @@ class SessionResult:
     images_total: int = 0           # delivered images in the film folder
     images_new: int = 0             # added by this session
     missing: list[int] = field(default_factory=list)
+    missing_details: list[exporter.MissingImage] = field(default_factory=list)   # number, the driver's reason, full scan
+    offset_advice: OffsetAdvice | None = None   # measured from the driver's margins, see core/margins.py
     strips: int = 0
     final_dir: Path | None = None
     warnings: list[str] = field(default_factory=list)
@@ -167,6 +170,7 @@ class ScanSession:
         self._next_frames: list[int] = list(range(1, FRAMES_PER_STRIP + 1))
         self._thread: threading.Thread | None = None
         self._log_file = None
+        self._margins = MarginTracker()
         self.result: SessionResult | None = None
         self.final_dir = self.settings.scan_root() / name
         self.stage_dir = self.final_dir / ".driver"
@@ -308,9 +312,10 @@ class ScanSession:
 
     def _finish(self, kind: str, code: str, detail: str, power: bool, strips: int, new_total: int,
                 export: exporter.ExportResult, warnings: list[str]) -> SessionResult:
+        advice = self._margins.advice(self.settings.position_offset_mm or 0.0) if export.missing else None
         return SessionResult(kind, code, detail, power, images_total=len(export.images), images_new=new_total,
-                             missing=[m.number for m in export.missing], strips=strips,
-                             final_dir=self.final_dir, warnings=warnings)
+                             missing=[m.number for m in export.missing], missing_details=list(export.missing),
+                             offset_advice=advice, strips=strips, final_dir=self.final_dir, warnings=warnings)
 
     def _ask_next(self) -> bool:
         self._next_choice = False
@@ -368,6 +373,7 @@ class ScanSession:
     def _run(self, argv: list[str], strip_no: int) -> tuple[int, str]:
         def on_line(stream: str, line: str) -> None:
             self._log(line)
+            self._margins.feed(line)
             parsed = classify_line(line)
             if parsed.kind == "wrote_main":
                 self._emit("frame_written", strip=strip_no, frame=parsed.data["frame"], path=parsed.data["path"])

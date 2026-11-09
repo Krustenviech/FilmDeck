@@ -259,3 +259,29 @@ def test_eject_that_never_ends_is_interrupted_not_killed():
 def _fake_driver():
     from pathlib import Path
     return drv.Driver(Path("/nonexistent"), "0.2.11", False)
+
+
+def test_refused_frame_comes_with_reason_full_scan_and_measured_offset(settings, demo):
+    # a unit that sits 0.5 mm early, and frame 3 a further 0.4 mm: refused for its leading margin
+    settings.preview_size = 0
+    demo.setenv("OF135I_DEMO_SCENARIO", "early:0.5,tight:3")
+    r = Run(settings, "strip", "26-11-Test-Cam", frames=[1, 2, 3, 4])
+    res = r.go()
+    assert res.kind == "partial" and res.missing == [3] and res.images_total == 3
+    (m,) = res.missing_details
+    assert "leading margin below" in m.reason and m.overscan.name == "26-11-Test-Cam_03_overscan.tiff" and m.overscan.exists()
+    a = res.offset_advice
+    assert a is not None and a.suggested == -0.5 and a.frames == 3 and a.current == 0.0
+
+
+def test_applying_the_advised_offset_fixes_the_unit(settings, demo):
+    demo.setenv("OF135I_DEMO_SCENARIO", "early:0.5")
+    settings.position_offset_mm = -0.5
+    res = Run(settings, "strip", "26-11-Test-Cam", frames=[1, 2, 3]).go()
+    assert res.kind == "ok" and res.missing == [] and res.offset_advice is None
+
+
+def test_no_advice_without_a_refused_frame(settings, demo):
+    demo.setenv("OF135I_DEMO_SCENARIO", "early:0.5")
+    res = Run(settings, "strip", "26-11-Test-Cam", frames=[1, 2]).go()
+    assert res.kind == "ok" and res.offset_advice is None

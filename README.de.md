@@ -24,7 +24,7 @@ Es **invertiert, korrigiert und bearbeitet nichts**. Gescannt werden Negative; I
 Was das praktisch heißt:
 
 - Kein menschlicher Entwickler hat den Code Zeile für Zeile geprüft.
-- Es gibt rund 100 automatische Tests (gegen einen eingebauten *Demo-Treiber* und gegen den Quelltext des echten Treibers), und das AppImage hat einen Selbsttest. **Das ersetzt keinen echten Scan.** Stand Version 0.1.1 wurde das Programm **noch nicht mit einem echten Scanner ausgeführt**; den ersten Lauf macht der Besitzer. Siehe [Stand](#stand).
+- Es gibt rund 100 automatische Tests (gegen einen eingebauten *Demo-Treiber* und gegen den Quelltext des echten Treibers), und das AppImage hat einen Selbsttest. **Das ersetzt keinen echten Scan.** Bisher hat der Besitzer **einen echten Streifen** damit gescannt (6 Bilder, Farbe, 600 dpi) und es lief; alles Weitere, das den Scanner braucht, ist ungetestet. Siehe [Stand](#stand).
 - Den Scanner bewegt der Treiber, nicht dieses Programm. FilmDeck hält sich an die Sicherheitsregeln des Treibers (siehe [Sicherheit](#sicherheit)); wenn etwas seltsam aussieht, gilt zuerst die Dokumentation des Treibers.
 
 ---
@@ -35,7 +35,8 @@ Was das praktisch heißt:
 |---|---|
 | Funktioniert, automatisch getestet | Streifen- und Ganzfilm-Scan gegen den Demo-Treiber (inkl. gewählter Bilder, mehrere Streifen, Abbruch, Fehler, Auswerfen), Dateinamen und Nummerierung, 48/24/16/8-Bit-Umwandlung, Update-/Rückgängig-Logik des Treibers, alle Texte in beiden Sprachen, das AppImage (gebaut und selbstgetestet) |
 | Gegen den Quelltext des echten Treibers geprüft | Jede Kommandozeile, die FilmDeck baut, wird vom echten `of135i`-Argument-Parser akzeptiert; das Ausgabeformat `wrote …` und die Rückfragen sind mit dem Code des Treibers abgeglichen |
-| **Noch nicht getestet** | Alles, was den echten Scanner braucht: Laden, Scannen, Filmhalter neu einschieben, Abbruch, Auswerfen |
+| Am echten Scanner getestet (einmal, 08.11.2026) | Ein Farbstreifen mit 6 Bildern, 600 dpi, 48 Bit: Start, Treiber-Download, USB-Regel, Laden mit Filmhalter-Rückfrage, Scannen, Nummerierung und Dateien. Ein Bild lehnte der Treiber ab (Rand zu klein); die Erklärung und der Offset-Vorschlag im Programm stammen aus diesem Scan |
+| **Am echten Scanner noch nicht getestet** | Ganzer Film mit mehreren Streifen, Schwarzweiß, 3600 / 7200 dpi, 24 / 16 / 8 Bit an echten Scans, Abbruch, Auswerfen |
 | Nicht unterstützt | Andere Scanner; Invertieren / Bearbeiten; andere Prozessor-Architekturen (das AppImage ist x86_64) |
 
 ---
@@ -65,7 +66,7 @@ Aus dem Quelltext: `pip install .` und `filmdeck` (braucht Python 3.12 oder neue
 
 ## Bedienung
 
-Obere Leiste: Scannerstatus (grün = bereit), **Scanner prüfen**, **Auswerfen …**, der Umschalter **Einzelner Streifen / Ganzer Film** und **Optionen**.
+Obere Leiste: Scannerstatus (grün = bereit), **Scanner prüfen**, **Auswerfen …** und **Optionen**. Der Umschalter **Einzelner Streifen / Ganzer Film** steht oben im linken Bereich, über dem Namen.
 
 **Einzelner Streifen**
 
@@ -92,6 +93,7 @@ Gleiches Formular; *Bilder des 1. Streifens* gilt für den ersten Streifen. Nach
     26-11-Kodak_Gold-Nikon_F3_01_ir.tiff     Infrarotkanal (C-41, wenn aktiviert; NegPy erkennt ihn)
     26-11-Kodak_Gold-Nikon_F3_02.tiff
     ...
+    26-11-Kodak_Gold-Nikon_F3_04_overscan.tiff   nur wenn der Treiber Bild 4 nicht zugeschnitten hat (siehe unten)
     .previews/…_01.jpg                       kleine JPEG-Vorschauen (optional)
     .driver/                                 die eigenen Dateien des Treibers; nicht anfassen
 ```
@@ -118,7 +120,7 @@ Einstellungen liegen in `~/.config/filmdeck/settings.json`. Protokolle liegen in
 
 ## Treiber-Updates
 
-Beim Start fragt FilmDeck bei GitHub die neueste Version (oder `master`, falls gewählt) von cgillingers Treiber ab. Gibt es eine neuere, erscheint ein Banner mit **Neuerungen** (Release-Notes) und **Jetzt aktualisieren**. Die neue Version wird heruntergeladen, sicher entpackt, **einmal testweise gestartet** und erst dann die aktive; die vorige bleibt erhalten, damit *Optionen → Treiber → Vorige Version wiederherstellen* es rückgängig machen kann. Während eines Scans wird nichts aktualisiert. Ein Treiber in einem eigenen Ordner wird nie angefasst. FilmDeck braucht Treiber ab Version 0.2.11.
+Beim Start fragt FilmDeck bei GitHub die neueste Version (oder `master`, falls gewählt) von cgillingers Treiber ab. Gibt es eine neuere, erscheint ein Banner mit **Neuerungen** (Release-Notes) und **Jetzt aktualisieren**. Die neue Version wird heruntergeladen, sicher entpackt, **einmal testweise gestartet** und erst dann die aktive; die vorige bleibt erhalten, damit *Optionen → Treiber → Vorige Version wiederherstellen* es rückgängig machen kann. Während eines Scans wird nichts aktualisiert. Ein Treiber in einem eigenen Ordner wird nie angefasst. FilmDeck braucht Treiber ab Version 0.2.11; geprüft gegen den Quelltext von 0.2.11 und 0.2.12.
 
 ---
 
@@ -141,6 +143,7 @@ FilmDeck startet den Treiber als eigenen Prozess und hält sich an seine Regeln:
 | *Keine USB-Berechtigung* | udev-Regel installieren (`packaging/install-udev.sh`), Scanner neu einstecken |
 | *Kein Scanner gefunden* | Scanner einschalten, Kabel und Netzteil prüfen, *Scanner prüfen* drücken |
 | *Scanner ist belegt* | Ein anderer Treiberprozess oder ein anderes Programm benutzt ihn; beenden |
+| *Bild NN fehlt* nach einem Scan | Der Treiber hat das Bild gescannt, aber nicht zugeschnitten: Die Bildöffnung lag zu nah am Rand des Scanbereichs (weniger als 0,15 mm). Die Nummer bleibt reserviert, der nicht zugeschnittene Scan liegt als `…_NN_overscan.tiff` im Ordner. FilmDeck misst, wie weit dein Scanner danebenliegt, und bietet den passenden Wert für *Bildlage verschieben* an (Optionen → Scan; negativ = Scanbereich beginnt früher) |
 | *Laden fehlgeschlagen* / *unsicher* | Scanner aus- und einschalten, Halter herausziehen, neu versuchen; klemmt er, nach dem Neustart *Auswerfen …* benutzen |
 | AppImage startet nicht (FUSE) | `APPIMAGE_EXTRACT_AND_RUN=1 ./FilmDeck-*.AppImage` |
 | Qt-Fehler zum `xcb`-Plugin | `xcb-util-cursor` installieren (`libxcb-cursor0` bei Debian/Ubuntu) |

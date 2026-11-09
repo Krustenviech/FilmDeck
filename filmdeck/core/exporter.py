@@ -40,7 +40,8 @@ class ExportedImage:
 @dataclass(frozen=True)
 class MissingImage:
     number: int
-    reason: str
+    reason: str                       # the driver's own words (English)
+    overscan: Path | None = None      # its full scan, published as <name>_NN_overscan.tiff (not cropped)
 
 
 @dataclass
@@ -91,6 +92,31 @@ def _nonempty(path: Path) -> bool:
         return False
 
 
+def _publish_full_scan(stage_dir: str | Path, final: Path, album: str, number: int, item: dict, bits: int,
+                       warnings: list[str]) -> Path | None:
+    """A frame the driver refused to crop (``aperture coverage NOT verified``) keeps its full scan in the
+    staging folder. Publish it as ``<name>_NN_overscan.tiff`` so the picture is not lost; it is never
+    cropped here, and the number stays reserved for ``of135i recrop``."""
+    try:
+        roll = f"{item.get('prefix') or ''}roll-{int(item['roll']):03d}"
+        src = Path(stage_dir) / roll / f"f{int(item['frame'])}.overscan.tiff"
+    except (KeyError, TypeError, ValueError):
+        return None
+    if not _nonempty(src):
+        return None
+    dest = final / image_filename(album, number, "_overscan")
+    try:
+        if not dest.exists():
+            if bits == 48:
+                _link_or_copy(src, dest)
+            else:
+                imaging.convert_tiff(src, dest, bits)
+        return dest if _nonempty(dest) else None
+    except (OSError, imaging.ImagingError, ValueError) as e:
+        warnings.append(f"#{number}: could not publish the full scan: {e}")
+        return None
+
+
 def _remove_stale_partials(folder: Path) -> None:
     if folder.is_dir():
         for p in folder.glob("*.partial"):
@@ -117,7 +143,8 @@ def export_album(stage_dir: str | Path, album: str, final_dir: str | Path, *,
     for item in sorted(index["images"], key=lambda i: int(i.get("number", 0))):
         number = int(item["number"])
         if item.get("status") != "delivered":
-            result.missing.append(MissingImage(number, str(item.get("reason") or "not delivered")))
+            overscan = _publish_full_scan(stage_dir, final, album, number, item, bits, result.warnings)
+            result.missing.append(MissingImage(number, str(item.get("reason") or "not delivered"), overscan))
             continue
         src = Path(item.get("source") or "")
         if not src.is_absolute() or not _nonempty(src):

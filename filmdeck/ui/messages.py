@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from ..core.margins import OffsetAdvice, refusal_kind
 from ..core.session import SessionResult
-from ..i18n import tr
+from ..i18n import language, tr
 
 # every code a SessionResult can carry (tests check each has a title and a text in both languages)
 ERROR_CODES = (
@@ -36,3 +37,49 @@ def describe(result: SessionResult, driver_version: str = "") -> tuple[str, str,
     if result.images_new:
         text += "\n\n" + tr("res.kept_images", new=result.images_new)
     return "error", title, text
+
+
+# ----------------------------------------------------------------------------- frames the driver did not crop
+
+def mm(value: float, *, signed: bool = False, decimals: int = 1) -> str:
+    """A length in mm for the text: decimal comma in German, a real minus sign."""
+    if abs(value) < 0.5 * 10 ** -decimals:
+        value = 0.0                                  # no sign (and no "-0.0") for zero
+        signed = False
+    text = f"{value:+.{decimals}f}" if signed else f"{value:.{decimals}f}"
+    text = text.replace("-", "\u2212")
+    return text.replace(".", ",") if language() == "de" else text
+
+
+def _advice_fits(kinds: list[str], advice: OffsetAdvice | None) -> bool:
+    """The measured shift must point the way the refusal says: a too small leading margin needs an earlier
+    window (lower offset), a too small trailing one a later window."""
+    if advice is None:
+        return False
+    return (("lead" in kinds and advice.suggested < advice.current)
+            or ("trail" in kinds and advice.suggested > advice.current))
+
+
+def describe_missing(result: SessionResult) -> tuple[str, str, OffsetAdvice | None] | None:
+    """(title, text, advice to apply or None) for frames that were scanned but not delivered, else None."""
+    details = result.missing_details
+    if not details:
+        return None
+    many = len(details) > 1
+    numbers = ", ".join(f"{d.number:02d}" for d in details)
+    kinds = [refusal_kind(d.reason) for d in details]
+    lines = [tr(f"miss.reason.{kind}", number=f"{d.number:02d}", reason=d.reason) for d, kind in zip(details, kinds)]
+    lines.append(tr("miss.reserved.many" if many else "miss.reserved.one"))
+    paragraphs = ["\n".join(lines)]
+    full = [tr("miss.overscan", number=f"{d.number:02d}", file=d.overscan.name) for d in details if d.overscan]
+    if full:
+        paragraphs.append("\n".join(full))
+    advice = result.offset_advice if _advice_fits(kinds, result.offset_advice) else None
+    if advice is not None:
+        paragraphs.append(tr("miss.advice", shift=mm(abs(advice.shift)), frames=advice.frames,
+                             direction=tr("miss.earlier" if advice.shift < 0 else "miss.later"),
+                             suggested=mm(advice.suggested, signed=True)))
+    elif any(k in ("lead", "trail") for k in kinds):
+        paragraphs.append(tr("miss.hint_generic"))
+    title = tr("miss.title.many" if many else "miss.title.one", numbers=numbers)
+    return title, "\n\n".join(paragraphs), advice

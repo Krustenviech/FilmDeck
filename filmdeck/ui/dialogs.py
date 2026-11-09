@@ -58,6 +58,14 @@ class InfoDialog(QDialog):
     def button(self, key: str) -> QPushButton:
         return self._buttons[key]
 
+    def showEvent(self, event) -> None:
+        super().showEvent(event)
+        # word-wrapped text needs more height at 600 px than at its natural width: make sure nothing is cut off,
+        # also where the window system does not enforce the layout's minimum size
+        need = self.layout().totalHeightForWidth(self.width())
+        if need > self.height():
+            self.resize(self.width(), need)
+
     def _answer(self, key: str) -> None:
         self._answered = True
         self.chosen.emit(key)
