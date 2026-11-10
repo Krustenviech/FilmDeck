@@ -323,7 +323,7 @@ class MainWindow(QMainWindow):
         self.btn_add_camera.setToolTip(tr("form.save_preset"))
         self.lb_type.setText(tr("form.type"))
         self.btn_c41.setText(tr("form.type.c41"))
-        self.btn_bw.setText(tr("form.type.bw"))
+        self.btn_bw.setText(tr("form.type.bw").replace("&", "&&"))      # "&" alone would make a shortcut
         self.lb_dpi.setText(tr("form.dpi"))
         self.lb_bits.setText(tr("form.bits"))
         for i, bits in enumerate(BIT_CHOICES):

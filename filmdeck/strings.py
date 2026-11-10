@@ -21,7 +21,7 @@ _t("top.options", "Optionen", "Options")
 _t("top.eject", "Auswerfen …", "Eject …")
 _t("top.eject_tip", "Filmhalter auswerfen, wenn er klemmt oder nach einem Fehler noch im Scanner steckt",
    "Eject the film holder if it is stuck or still inside after an error")
-_t("top.driver", "Treiber {version}", "Driver {version}")
+_t("top.driver", "opticfilm135i-linux {version}", "opticfilm135i-linux {version}")
 _t("top.driver_demo", "Demo-Treiber {version}", "Demo driver {version}")
 _t("top.driver_none", "Kein Treiber installiert", "No driver installed")
 
@@ -49,10 +49,10 @@ _t("upd.install", "Jetzt installieren", "Install now")
 _t("upd.installing", "Treiber wird heruntergeladen und installiert …", "Downloading and installing the driver …")
 _t("upd.busy", "Während eines Scans wird nicht aktualisiert.", "No updates while a scan is running.")
 _t("upd.not_managed",
-   "Dieser Treiber liegt in einem eigenen Ordner und wird nicht von FilmDeck verwaltet. Bitte dort selbst "
-   "aktualisieren (git pull) oder in den Optionen zum verwalteten Treiber wechseln.",
-   "This driver lives in a folder of your own and is not managed by FilmDeck. Update it there yourself "
-   "(git pull) or switch to the managed driver in the options.")
+   "Dieser Treiber liegt in einem eigenen Ordner und wurde nicht von FilmDeck installiert. Bitte dort selbst "
+   "aktualisieren (git pull) oder in den Optionen zum von FilmDeck installierten Treiber wechseln.",
+   "This driver lives in a folder of your own and was not installed by FilmDeck. Update it there yourself "
+   "(git pull) or switch to the driver installed by FilmDeck in the options.")
 _t("upd.done", "Treiber {version} ist installiert.", "Driver {version} is installed.")
 _t("upd.failed", "Update fehlgeschlagen", "Update failed")
 _t("upd.failed_text", "Der bisherige Treiber bleibt aktiv. Fehler: {error}",
@@ -84,7 +84,7 @@ _t("form.camera_placeholder", "z. B. Nikon F3", "e.g. Nikon F3")
 _t("form.save_preset", "In der Auswahl speichern", "Save to the drop-down list")
 _t("form.type", "Filmtyp", "Film type")
 _t("form.type.c41", "Farbe (C-41)", "Colour (C-41)")
-_t("form.type.bw", "Schwarzweiß", "Black & white")
+_t("form.type.bw", "Schwarzweiß", "Black & White")
 _t("form.dpi", "Auflösung", "Resolution")
 _t("form.bits", "Bit-Tiefe", "Bit depth")
 _t("form.bits.48", "48 Bit – Farbe, 16 Bit je Kanal", "48 bit – colour, 16 bit per channel")
@@ -418,22 +418,25 @@ _t("opt.presets_hint", "Diese Listen erscheinen als Auswahl im Hauptfenster.", "
 _t("opt.check_now", "Jetzt nach Update suchen", "Check for updates now")
 _t("opt.rollback", "Vorige Version wiederherstellen", "Restore the previous version")
 _t("opt.custom_driver", "Eigenen Treiberordner wählen …", "Choose your own driver folder …")
-_t("opt.managed_driver", "Verwalteten Treiber verwenden", "Use the managed driver")
+_t("opt.managed_driver", "Von FilmDeck installierten Treiber verwenden", "Use the driver installed by FilmDeck")
 _t("opt.pick_driver", "Treiberordner wählen (der Ordner mit „of135i“)", "Choose the driver folder (the one containing “of135i”)")
 _t("opt.doctor", "Hardware-Bericht (doctor)", "Hardware report (doctor)")
 _t("opt.doctor_hint", "Liest nur aus und verändert nichts am Scanner. Nützlich, wenn etwas nicht klappt.",
    "Read-only; changes nothing on the scanner. Useful when something does not work.")
 _t("opt.driver_none", "Kein Treiber installiert.", "No driver installed.")
 _t("opt.driver_demo", "Demo", "demo")
-_t("opt.driver_managed", "von FilmDeck verwaltet", "managed by FilmDeck")
+_t("opt.driver_managed", "von FilmDeck installiert", "installed by FilmDeck")
 _t("opt.driver_custom", "eigener Ordner", "own folder")
-_t("opt.driver_info", "Version {version} ({where})\n{path}", "Version {version} ({where})\n{path}")
+_t("opt.driver_info", "opticfilm135i-linux {version} ({where})\n{path}", "opticfilm135i-linux {version} ({where})\n{path}")
 _t("opt.driver_source", "Quelle: {label}", "Source: {label}")
-_t("opt.usb_title", "USB-Zugriff einrichten (einmalig)", "Set up USB access (once)")
+_t("opt.usb_title", "USB-Zugriff einrichten (einmalig, Steam Deck und anderes Linux)",
+   "Set up USB access (once, Steam Deck and other Linux)")
 _t("opt.usb_text",
    "Wenn der Scanner „Keine USB-Berechtigung“ meldet, diese Befehle im Terminal ausführen. Der Scanner muss danach "
-   "einmal aus- und wieder eingesteckt werden.",
+   "einmal aus- und wieder eingesteckt werden. Auf dem Steam Deck zusätzlich die SteamOS-Zeilen beachten; andere "
+   "Linux-Systeme brauchen nur die ersten beiden Befehle.",
    "If the scanner reports “No USB permission”, run these commands in a terminal. Afterwards unplug the scanner "
-   "and plug it in again once.")
+   "and plug it in again once. On the Steam Deck also follow the SteamOS lines; other Linux systems only need the "
+   "first two commands.")
 _t("opt.usb_readonly", "SteamOS schützt das Systemlaufwerk; vorher entsperren, danach wieder sperren.",
    "SteamOS protects the system drive; unlock it first and lock it again afterwards.")

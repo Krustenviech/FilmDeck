@@ -254,7 +254,7 @@ class OptionsDialog(QDialog):
             rule = paths.driver_root_dir() / "current" / "udev" / "60-of135i.rules"
         return (f"sudo cp '{rule}' /etc/udev/rules.d/\n"
                 "sudo udevadm control --reload-rules && sudo udevadm trigger\n"
-                "# SteamOS: " + tr("opt.usb_readonly") + "\n"
+                "# Steam Deck / SteamOS: " + tr("opt.usb_readonly") + "\n"
                 "# sudo steamos-readonly disable   ...   sudo steamos-readonly enable")
 
     def _refresh_driver_label(self, update_state: dict | None = None) -> None:

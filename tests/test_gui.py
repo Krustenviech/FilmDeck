@@ -312,3 +312,23 @@ def test_mode_switch_sits_in_the_settings_panel_above_the_name(app, window):
         window.ed_name.mapTo(window, window.ed_name.rect().topLeft()).y()
     assert window.btn_options.mapTo(window, window.btn_options.rect().topLeft()).y() < \
         window.btn_mode_strip.mapTo(window, window.btn_mode_strip.rect().topLeft()).y()
+
+
+def test_black_and_white_button_shows_its_ampersand(app, window):
+    from filmdeck import i18n
+    try:
+        i18n.set_language("en")
+        window.retranslate()
+        # Qt writes one visible "&" in a button as "&&"; a single one would underline the next letter instead
+        assert window.btn_bw.text() == "Black && White"
+    finally:
+        i18n.set_language("de")
+        window.retranslate()
+
+
+def test_window_icon_file_ships_with_the_package():
+    from pathlib import Path
+
+    import filmdeck
+    icon = Path(filmdeck.__file__).with_name("filmdeck.png")
+    assert icon.read_bytes()[:8] == b"\x89PNG\r\n\x1a\n"

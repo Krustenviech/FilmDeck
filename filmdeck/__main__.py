@@ -8,6 +8,7 @@ import os
 import signal
 import sys
 import traceback
+from pathlib import Path
 
 from . import APP_ID, APP_NAME, __version__
 
@@ -50,6 +51,7 @@ def main(argv: list[str] | None = None) -> int:
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     _setup_logging()
 
+    from PySide6.QtGui import QIcon
     from PySide6.QtWidgets import QApplication
 
     from . import i18n
@@ -61,6 +63,9 @@ def main(argv: list[str] | None = None) -> int:
     app.setApplicationName(APP_NAME)
     app.setApplicationVersion(__version__)
     app.setDesktopFileName(APP_ID)
+    icon_file = Path(__file__).with_name("filmdeck.png")
+    if icon_file.is_file():
+        app.setWindowIcon(QIcon(str(icon_file)))
     style.apply(app)
 
     settings = Settings.load()
