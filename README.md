@@ -11,9 +11,9 @@ It is a front-end for the community driver [opticfilm135i-linux](https://github.
 - checks at start-up whether the driver has a new version, shows what is new and installs it with one click (with rollback)
 - German and English, switchable
 
-It does **not** invert, colour-correct or edit anything. Scans are negatives; inversion and editing happen in NegPy.
----
 <img width="1912" height="1030" alt="FilmDeck" src="https://github.com/user-attachments/assets/c12263b4-60d4-43d6-8349-cbde7d0eb227" />
+
+It does **not** invert, colour-correct or edit anything. Scans are negatives; inversion and editing happen in NegPy.
 ---
 
 ## Made with AI – please read
