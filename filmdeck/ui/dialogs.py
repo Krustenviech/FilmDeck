@@ -167,7 +167,7 @@ class AboutDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle(title)
         self.setModal(True)
-        self.resize(720, 600)
+        self.resize(760, 700)
         lay = QVBoxLayout(self)
         lay.setContentsMargins(24, 22, 24, 20)
         lay.setSpacing(14)
