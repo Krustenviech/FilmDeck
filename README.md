@@ -22,7 +22,7 @@ It does **not** invert, colour-correct or edit anything. Scans are negatives; in
 What that means in practice:
 
 - No human developer has reviewed the code line by line.
-- There are about 100 automated tests (they run against a built-in *demo driver* and against the real driver's source code), and the AppImage includes a self-test. **None of this replaces a real scan.** Up to now the owner has run **one real strip** with it (6 frames, colour, 600 dpi) and found it working; everything else that needs the scanner is untested. See [Status](#status).
+- There are about 100 automated tests (they run against a built-in *demo driver* and against the real driver's source code), and the AppImage includes a self-test. **None of this replaces a real scan.** Up to now the owner has run **one real strip** with it (6 frames, colour, 600 dpi) and **one single frame at 7200 dpi** and found both working; everything else that needs the scanner is untested. See [Status](#status).
 - The scanner is moved by the driver, not by this program. FilmDeck follows the driver's safety rules (see [Safety](#safety)), but if something looks wrong, trust the driver's documentation first.
 
 ---
@@ -33,8 +33,8 @@ What that means in practice:
 |---|---|
 | Works, tested automatically | Strip scan and whole-film scan against the demo driver (including chosen frames, several strips, cancel, errors, eject), file naming and numbering, 48/24/16/8-bit conversion, driver update/rollback logic, all texts in both languages, the AppImage (built and self-tested) |
 | Checked against the real driver's source | Every command line FilmDeck builds is accepted by the real `of135i` argument parser; the `wrote …` output format and the prompts are matched against the driver's code |
-| Tested on a real scanner (once, 2026-11-08) | One colour strip of 6 frames at 600 dpi, 48 bit: start-up, driver download, USB rule, loading with the reinsert prompt, scanning, numbering and files. One frame was refused by the driver (margin too small); the explanation and the offset advice in the program come from that scan |
-| **Not yet tested on a real scanner** | Whole film with several strips, black & white, 3600 / 7200 dpi, 24 / 16 / 8 bit on real scans, cancel, eject |
+| Tested on a real scanner (2026-11-08 / 09 / 10) | One colour strip of 6 frames at 600 dpi, 48 bit: start-up, driver download, USB rule, loading with the reinsert prompt, scanning, numbering and files. One frame was refused by the driver (margin too small); the explanation and the offset advice in the program come from that scan. Then one single frame (frame 3 of a strip) at 7200 dpi, 48 bit: worked. The AppImage built by GitHub Actions was started and tried on the Steam Deck |
+| **Not yet tested on a real scanner** | Whole film with several strips, black & white, 3600 dpi, more than one frame at 7200 dpi, 24 / 16 / 8 bit on real scans, cancel, eject |
 | Not supported | Other scanners; inversion / editing; other CPU architectures (the AppImage is x86_64) |
 
 ---

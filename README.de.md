@@ -24,7 +24,7 @@ Es **invertiert, korrigiert und bearbeitet nichts**. Gescannt werden Negative; I
 Was das praktisch heißt:
 
 - Kein menschlicher Entwickler hat den Code Zeile für Zeile geprüft.
-- Es gibt rund 100 automatische Tests (gegen einen eingebauten *Demo-Treiber* und gegen den Quelltext des echten Treibers), und das AppImage hat einen Selbsttest. **Das ersetzt keinen echten Scan.** Bisher hat der Besitzer **einen echten Streifen** damit gescannt (6 Bilder, Farbe, 600 dpi) und es lief; alles Weitere, das den Scanner braucht, ist ungetestet. Siehe [Stand](#stand).
+- Es gibt rund 100 automatische Tests (gegen einen eingebauten *Demo-Treiber* und gegen den Quelltext des echten Treibers), und das AppImage hat einen Selbsttest. **Das ersetzt keinen echten Scan.** Bisher hat der Besitzer **einen echten Streifen** damit gescannt (6 Bilder, Farbe, 600 dpi) und **ein einzelnes Bild mit 7200 dpi**; beides lief. Alles Weitere, das den Scanner braucht, ist ungetestet. Siehe [Stand](#stand).
 - Den Scanner bewegt der Treiber, nicht dieses Programm. FilmDeck hält sich an die Sicherheitsregeln des Treibers (siehe [Sicherheit](#sicherheit)); wenn etwas seltsam aussieht, gilt zuerst die Dokumentation des Treibers.
 
 ---
@@ -35,8 +35,8 @@ Was das praktisch heißt:
 |---|---|
 | Funktioniert, automatisch getestet | Streifen- und Ganzfilm-Scan gegen den Demo-Treiber (inkl. gewählter Bilder, mehrere Streifen, Abbruch, Fehler, Auswerfen), Dateinamen und Nummerierung, 48/24/16/8-Bit-Umwandlung, Update-/Rückgängig-Logik des Treibers, alle Texte in beiden Sprachen, das AppImage (gebaut und selbstgetestet) |
 | Gegen den Quelltext des echten Treibers geprüft | Jede Kommandozeile, die FilmDeck baut, wird vom echten `of135i`-Argument-Parser akzeptiert; das Ausgabeformat `wrote …` und die Rückfragen sind mit dem Code des Treibers abgeglichen |
-| Am echten Scanner getestet (einmal, 08.11.2026) | Ein Farbstreifen mit 6 Bildern, 600 dpi, 48 Bit: Start, Treiber-Download, USB-Regel, Laden mit Filmhalter-Rückfrage, Scannen, Nummerierung und Dateien. Ein Bild lehnte der Treiber ab (Rand zu klein); die Erklärung und der Offset-Vorschlag im Programm stammen aus diesem Scan |
-| **Am echten Scanner noch nicht getestet** | Ganzer Film mit mehreren Streifen, Schwarzweiß, 3600 / 7200 dpi, 24 / 16 / 8 Bit an echten Scans, Abbruch, Auswerfen |
+| Am echten Scanner getestet (08. / 09. / 10.11.2026) | Ein Farbstreifen mit 6 Bildern, 600 dpi, 48 Bit: Start, Treiber-Download, USB-Regel, Laden mit Filmhalter-Rückfrage, Scannen, Nummerierung und Dateien. Ein Bild lehnte der Treiber ab (Rand zu klein); die Erklärung und der Offset-Vorschlag im Programm stammen aus diesem Scan. Danach ein einzelnes Bild (Bild 3 eines Streifens) mit 7200 dpi, 48 Bit: funktionierte. Das von GitHub Actions gebaute AppImage wurde auf dem Steam Deck gestartet und ausprobiert |
+| **Am echten Scanner noch nicht getestet** | Ganzer Film mit mehreren Streifen, Schwarzweiß, 3600 dpi, mehr als ein Bild bei 7200 dpi, 24 / 16 / 8 Bit an echten Scans, Abbruch, Auswerfen |
 | Nicht unterstützt | Andere Scanner; Invertieren / Bearbeiten; andere Prozessor-Architekturen (das AppImage ist x86_64) |
 
 ---
