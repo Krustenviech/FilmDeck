@@ -6,7 +6,7 @@ film/camera presets, a JPEG preview, an update check for the driver and a
 shortcut to NegPy.
 """
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 APP_NAME = "FilmDeck"
 APP_ID = "filmdeck"
 REPO_URL = "https://github.com/Krustenviech/filmdeck"

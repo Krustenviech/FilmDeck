@@ -21,9 +21,8 @@ def about_html(version: str, driver_version: str, log_folder: str) -> str:
     """The text of the info box (HTML for a QTextBrowser; every value that is not ours is escaped)."""
     return "".join((
         tr("about.intro", version=escape(version)),
-        tr("about.driver", url=DRIVER_URL, version=escape(driver_version or "-")),
         tr("about.project", url=REPO_URL),
-        tr("about.ai"),
+        tr("about.driver", url=DRIVER_URL, version=escape(driver_version or "-")),
         tr("about.negpy", url=NEGPY_URL),
         tr("about.logs", folder=escape(log_folder)),
         tr("about.legal"),

@@ -5,23 +5,15 @@ The version number lives in one place: `filmdeck/__init__.py` (`__version__`). A
 
 All of this was written by an AI (Claude) together with the repository owner; see the README.
 
+## [0.1.4] – 2026-11-10
+
+- Shorter info box (like in other programs): version, AI notice, repository link and licence, the driver opticfilm135i-linux, NegPy, log folder.
+
 ## [0.1.3] – 2026-11-10
 
-From the second and third real scans on a Steam Deck (a second strip into the same folder, a cancelled scan, eject).
-
-### Added
-- An info button (**?**, bottom right) with a short text: what FilmDeck is, the link to this repository, the MIT licence, the driver **opticfilm135i-linux** by cgillinger with its link and what it does, the AI notice, NegPy, and where the log files are.
-- Options → Driver names the driver (opticfilm135i-linux, by cgillinger, GPL-2.0) and links to it.
-- A window icon (the desktop showed its generic one before).
-
-### Changed
-- The footer and Options call the driver by its name, **opticfilm135i-linux**, instead of "Driver", and say "installed by FilmDeck" instead of "managed by FilmDeck".
-- The USB access text in Options names the Steam Deck and other Linux systems.
-- The summary after an incomplete scan no longer says the film opening was "not verified"; it says there is no file for those numbers.
-
-### Fixed
-- The button "Black & White" was shown as "Black_white": Qt took the "&" for a shortcut marker.
-- A frame that was lost because a scan was cancelled was reported as "film opening not found reliably (scan)", and again after every later strip. It is now explained as "not scanned to the end", and only in the run that lost it.
+- New info button **?** with links to this repository, the driver opticfilm135i-linux (cgillinger) and NegPy; the driver is now called by its name in the footer and in Options.
+- Fixed: "Black & White" button label; a cancelled scan was wrongly reported as "film opening not found" and again after every later strip.
+- Window icon; USB text mentions the Steam Deck and other Linux.
 
 ## [0.1.2] – 2026-11-09
 
