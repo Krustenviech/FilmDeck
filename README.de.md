@@ -41,26 +41,48 @@ Was das praktisch heißt:
 
 ---
 
-## Installation (Steam Deck / Linux, x86_64)
+## Installation
 
-1. **AppImage holen:** `FilmDeck-<Version>-x86_64.AppImage` aus den *Releases* des Repositorys (oder als *Actions*-Artefakt), oder selbst bauen: `bash packaging/build-appimage.sh`.
-2. Ausführbar machen und starten (im Desktop-Modus):
+FilmDeck ist ein einziges AppImage für jeden **x86_64-Linux-Desktop**; nichts darin ist Steam-Deck-spezifisch. Ausprobiert wurde es aber **nur auf einem Steam Deck (SteamOS, Desktop-Modus)**. Andere Distributionen sollten genauso funktionieren, das hat aber noch niemand geprüft – wenn du eine probierst, mach bitte ein Issue auf und schreib, was passiert ist.
+
+### Steam Deck (Desktop-Modus)
+
+1. `FilmDeck-<Version>-x86_64.AppImage` aus den [*Releases*](../../releases) des Repositorys laden. An einen festen Ort legen (z. B. `~/Applications`), nicht in einen temporären Ordner.
+2. Ausführbar machen und starten:
    ```bash
    chmod +x FilmDeck-*-x86_64.AppImage
    ./FilmDeck-*-x86_64.AppImage
    ```
-   Falls es über FUSE meckert: `APPIMAGE_EXTRACT_AND_RUN=1 ./FilmDeck-*.AppImage`.
 3. **Erster Start:** Der Treiber ist nicht im AppImage enthalten. FilmDeck bietet an, ihn aus cgillingers Repository herunterzuladen, und legt ihn in `~/.local/share/filmdeck/driver/` ab.
-4. **USB-Berechtigung (einmalig):** damit der Scanner ohne Root benutzbar ist, die udev-Regel des Treibers installieren:
+4. **USB-Berechtigung (einmalig):** damit der Scanner ohne Root benutzbar ist, die udev-Regel des Treibers installieren. Das Skript steckt nicht im AppImage: [`packaging/install-udev.sh`](packaging/install-udev.sh) aus diesem Repository laden (öffnen, *Raw*, speichern) und ausführen (dieselben Befehle stehen in *Optionen → Treiber*):
    ```bash
-   bash packaging/install-udev.sh
+   bash install-udev.sh
    ```
-   (Dieselben Befehle stehen in *Optionen → Treiber*.) Unter SteamOS entsperrt das Skript dafür kurz das Systemlaufwerk und sperrt es wieder. Danach USB-Kabel des Scanners abziehen und wieder einstecken.
+   SteamOS hält das Systemlaufwerk schreibgeschützt: Das Skript entsperrt es dafür kurz und sperrt es wieder. Danach USB-Kabel des Scanners abziehen und wieder einstecken. Wird der Scanner nach einem SteamOS-Update wieder „nicht gefunden“, das Skript einfach noch einmal ausführen.
 5. **NegPy (optional):** das NegPy-AppImage nach `~/Applications` oder `~/Downloads` legen oder in *Optionen → Allgemein* auswählen.
 
-Alles, was das AppImage braucht, steckt darin (Python, Qt, numpy, Pillow, tifffile, pyusb, libusb). Es setzt nur die üblichen Desktop-Bibliotheken eines Linux-Desktops voraus (X11 oder Wayland, `libxcb-cursor`).
+### Anderes Linux (x86_64)
 
-Aus dem Quelltext: `pip install .` und `filmdeck` (braucht Python 3.12 oder neuer und libusb).
+1. AppImage aus den [*Releases*](../../releases) laden, mit `chmod +x` ausführbar machen und starten wie oben.
+   - Meldet es etwas zu FUSE: entweder die FUSE-2-Bibliothek installieren (`libfuse2` / `libfuse2t64` bei Debian und Ubuntu, `fuse-libs` bei Fedora, `fuse2` bei Arch) oder mit `APPIMAGE_EXTRACT_AND_RUN=1 ./FilmDeck-*.AppImage` starten.
+   - Meldet Qt etwas zum `xcb`-Plugin: `libxcb-cursor0` (Debian/Ubuntu) bzw. `xcb-util-cursor` (Fedora, Arch) installieren.
+2. **Erster Start:** FilmDeck lädt den Treiber herunter, wie oben.
+3. **USB-Berechtigung (einmalig).** Entweder `bash packaging/install-udev.sh` aus einem Klon dieses Repositorys ausführen oder die Regel von Hand anlegen (es ist dieselbe, die der Treiber mitbringt):
+   ```bash
+   echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="07b3", ATTRS{idProduct}=="1436", MODE="0660", TAG+="uaccess"' \
+     | sudo tee /etc/udev/rules.d/60-of135i.rules
+   sudo udevadm control --reload-rules && sudo udevadm trigger
+   ```
+   Danach USB-Kabel des Scanners abziehen und wieder einstecken. `TAG+="uaccess"` gibt dem Benutzer Zugriff, der am Bildschirm angemeldet ist (systemd-logind, das fast jede Desktop-Distribution nutzt). Ohne das `MODE`/`GROUP` auf eine Gruppe ändern, in der du bist.
+4. **NegPy (optional):** wie oben.
+
+### Was im AppImage steckt
+
+Python, Qt (PySide6), numpy, Pillow, tifffile, pyusb und libusb sind darin. Es setzt nur die üblichen Bibliotheken eines Linux-Desktops voraus (X11 oder Wayland, `libxcb-cursor`). Es gibt es **nur für x86_64**; ARM-Rechner (Raspberry Pi, VMs auf Apple Silicon) unterstützt das AppImage nicht.
+
+### Aus dem Quelltext
+
+`pip install .` und `filmdeck` (braucht Python 3.12 oder neuer und libusb). Das AppImage selbst bauen: `bash packaging/build-appimage.sh`.
 
 ---
 

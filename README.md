@@ -39,26 +39,48 @@ What that means in practice:
 
 ---
 
-## Install (Steam Deck / Linux, x86_64)
+## Install
 
-1. **Get the AppImage** `FilmDeck-<version>-x86_64.AppImage` from the repository's *Releases* (or the *Actions* artifact), or build it yourself: `bash packaging/build-appimage.sh`.
-2. Make it executable and start it (in desktop mode):
+FilmDeck is one AppImage for any **x86_64 Linux desktop**; nothing in it is specific to the Steam Deck. It was only **tried on a Steam Deck (SteamOS, desktop mode)**. Other distributions should work the same way but nobody has checked yet – if you try one, please open an issue and say what happened.
+
+### Steam Deck (desktop mode)
+
+1. Download `FilmDeck-<version>-x86_64.AppImage` from the repository's [*Releases*](../../releases). Put it somewhere permanent (for example `~/Applications`), not in a temporary folder.
+2. Make it executable and start it:
    ```bash
    chmod +x FilmDeck-*-x86_64.AppImage
    ./FilmDeck-*-x86_64.AppImage
    ```
-   If it complains about FUSE, start it with `APPIMAGE_EXTRACT_AND_RUN=1 ./FilmDeck-*.AppImage`.
 3. **First start:** the driver is not part of the AppImage. FilmDeck offers to download it from cgillinger's repository and keeps it in `~/.local/share/filmdeck/driver/`.
-4. **USB permission (once):** so you can use the scanner without root, install the driver's udev rule:
+4. **USB permission (once):** so you can use the scanner without root, install the driver's udev rule. The script is not inside the AppImage: download [`packaging/install-udev.sh`](packaging/install-udev.sh) from this repository (open it, *Raw*, save) and run it (the same commands are shown in *Options → Driver*):
    ```bash
-   bash packaging/install-udev.sh
+   bash install-udev.sh
    ```
-   (The same commands are shown in *Options → Driver*.) On SteamOS the script unlocks the system drive for this one step and locks it again. Then unplug and re-plug the scanner's USB cable.
+   SteamOS keeps the system drive write-protected: the script unlocks it for this one step and locks it again. Then unplug and re-plug the scanner's USB cable. If the scanner is "not found" again after a SteamOS update, run the script once more.
 5. **NegPy (optional):** put the NegPy AppImage in `~/Applications` or `~/Downloads`, or choose it in *Options → General*.
 
-Everything the AppImage needs is inside it (Python, Qt, numpy, Pillow, tifffile, pyusb, libusb). It only expects the usual desktop libraries of a Linux desktop (X11 or Wayland, `libxcb-cursor`).
+### Other Linux (x86_64)
 
-Run from source instead: `pip install .` and `filmdeck` (needs Python 3.12 or newer and libusb).
+1. Download the AppImage from [*Releases*](../../releases), `chmod +x` it and start it as above.
+   - If it complains about FUSE, either install the FUSE 2 library (`libfuse2` / `libfuse2t64` on Debian and Ubuntu, `fuse-libs` on Fedora, `fuse2` on Arch) or start it with `APPIMAGE_EXTRACT_AND_RUN=1 ./FilmDeck-*.AppImage`.
+   - If Qt complains about the `xcb` plugin, install `libxcb-cursor0` (Debian/Ubuntu) / `xcb-util-cursor` (Fedora, Arch).
+2. **First start:** FilmDeck downloads the driver, as above.
+3. **USB permission (once).** Either run `bash packaging/install-udev.sh` from a clone of this repository, or install the rule by hand (it is the same one the driver ships):
+   ```bash
+   echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="07b3", ATTRS{idProduct}=="1436", MODE="0660", TAG+="uaccess"' \
+     | sudo tee /etc/udev/rules.d/60-of135i.rules
+   sudo udevadm control --reload-rules && sudo udevadm trigger
+   ```
+   Then unplug and re-plug the scanner's USB cable. `TAG+="uaccess"` gives access to the user who is logged in at the screen (systemd-logind, which almost every desktop distribution uses). Without it, change `MODE`/`GROUP` to a group you are in.
+4. **NegPy (optional):** as above.
+
+### What the AppImage contains
+
+Python, Qt (PySide6), numpy, Pillow, tifffile, pyusb and libusb are inside. It only expects the usual libraries of a Linux desktop (X11 or Wayland, `libxcb-cursor`). It is **x86_64 only**; ARM computers (Raspberry Pi, Apple-silicon VMs) are not supported by the AppImage.
+
+### From source
+
+`pip install .` and `filmdeck` (needs Python 3.12 or newer and libusb). Build the AppImage yourself with `bash packaging/build-appimage.sh`.
 
 ---
 
