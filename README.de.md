@@ -13,6 +13,8 @@ Es ist eine Oberfläche für den Community-Treiber [opticfilm135i-linux](https:/
 - prüft beim Start, ob es eine neue Treiberversion gibt, zeigt die Neuerungen und installiert sie per Klick (mit Rückgängig-Funktion)
 - Deutsch und Englisch, umschaltbar
 
+<img width="1912" height="1030" alt="FilmDeck" src="https://github.com/user-attachments/assets/c12263b4-60d4-43d6-8349-cbde7d0eb227" />
+
 Es **invertiert, korrigiert und bearbeitet nichts**. Gescannt werden Negative; Invertieren und Bearbeiten passiert in NegPy.
 
 ---
