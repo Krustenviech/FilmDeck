@@ -63,6 +63,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           bash packaging/release-notes.sh "${GITHUB_REF_NAME#v}" > "$RUNNER_TEMP/notes.md"
-          gh release create "$GITHUB_REF_NAME" packaging/build/FilmDeck-*-x86_64.AppImage \
-            --title "FilmDeck $GITHUB_REF_NAME" \
-            --notes-file "$RUNNER_TEMP/notes.md"
+          app=(packaging/build/FilmDeck-*-x86_64.AppImage)
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            # the release was already made by hand on github.com: add the AppImage and use the changelog text
+            gh release upload "$GITHUB_REF_NAME" "${app[@]}" --clobber
+            gh release edit "$GITHUB_REF_NAME" --title "FilmDeck $GITHUB_REF_NAME" --notes-file "$RUNNER_TEMP/notes.md"
+          else
+            gh release create "$GITHUB_REF_NAME" "${app[@]}" \
+              --title "FilmDeck $GITHUB_REF_NAME" \
+              --notes-file "$RUNNER_TEMP/notes.md"
+          fi
