@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QDialog, QDialogButtonBox, 
                                QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QListWidget, QPlainTextEdit,
                                QPushButton, QScrollArea, QTabWidget, QVBoxLayout, QWidget)
 
+from .. import DRIVER_URL
 from ..core import external, paths
 from ..core.config import ROTATE_CHOICES, Settings
 from ..core.driver import Driver
@@ -213,6 +214,11 @@ class OptionsDialog(QDialog):
         self.lb_driver.setWordWrap(True)
         self.lb_driver.setTextInteractionFlags(Qt.TextSelectableByMouse)
         lay.addWidget(self.lb_driver)
+        self.lb_driver_link = QLabel(tr("opt.driver_link", url=DRIVER_URL))
+        self.lb_driver_link.setTextFormat(Qt.RichText)
+        self.lb_driver_link.setOpenExternalLinks(True)
+        self.lb_driver_link.setWordWrap(True)
+        lay.addWidget(self.lb_driver_link)
         self._refresh_driver_label(update_state)
         self.btn_check = QPushButton(tr("opt.check_now"))
         self.btn_check.clicked.connect(self.check_updates_requested)

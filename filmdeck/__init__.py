@@ -6,6 +6,9 @@ film/camera presets, a JPEG preview, an update check for the driver and a
 shortcut to NegPy.
 """
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 APP_NAME = "FilmDeck"
 APP_ID = "filmdeck"
+REPO_URL = "https://github.com/Krustenviech/filmdeck"
+DRIVER_URL = "https://github.com/cgillinger/opticfilm135i-linux"
+NEGPY_URL = "https://github.com/marcinz606/NegPy"

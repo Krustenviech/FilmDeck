@@ -160,6 +160,34 @@ class UpdateDialog(QDialog):
             self.btn_install.setEnabled(True)
 
 
+class AboutDialog(QDialog):
+    """The info box: what FilmDeck is, where it comes from, links (opened in the browser)."""
+
+    def __init__(self, parent, title: str, html: str):
+        super().__init__(parent)
+        self.setWindowTitle(title)
+        self.setModal(True)
+        self.resize(720, 600)
+        lay = QVBoxLayout(self)
+        lay.setContentsMargins(24, 22, 24, 20)
+        lay.setSpacing(14)
+        head = QLabel(title)
+        head.setObjectName("heading")
+        lay.addWidget(head)
+        self.view = QTextBrowser()
+        self.view.setOpenExternalLinks(True)
+        self.view.document().setDefaultStyleSheet("h3 { margin-top: 14px; margin-bottom: 2px; }")
+        self.view.setHtml(html)
+        lay.addWidget(self.view, 1)
+        row = QHBoxLayout()
+        row.addStretch(1)
+        close = QPushButton(tr("dlg.close"))
+        close.setObjectName("primary")
+        close.clicked.connect(self.accept)
+        row.addWidget(close)
+        lay.addLayout(row)
+
+
 class TextDialog(QDialog):
     """Read-only text with a copy button (hardware report, commands)."""
 

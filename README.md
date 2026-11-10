@@ -33,8 +33,8 @@ What that means in practice:
 |---|---|
 | Works, tested automatically | Strip scan and whole-film scan against the demo driver (including chosen frames, several strips, cancel, errors, eject), file naming and numbering, 48/24/16/8-bit conversion, driver update/rollback logic, all texts in both languages, the AppImage (built and self-tested) |
 | Checked against the real driver's source | Every command line FilmDeck builds is accepted by the real `of135i` argument parser; the `wrote …` output format and the prompts are matched against the driver's code |
-| Tested on a real scanner (2026-11-08 / 09 / 10) | One colour strip of 6 frames at 600 dpi, 48 bit: start-up, driver download, USB rule, loading with the reinsert prompt, scanning, numbering and files. One frame was refused by the driver (margin too small); the explanation and the offset advice in the program come from that scan. Then one single frame (frame 3 of a strip) at 7200 dpi, 48 bit: worked. The AppImage built by GitHub Actions was started and tried on the Steam Deck |
-| **Not yet tested on a real scanner** | Whole film with several strips, black & white, 3600 dpi, more than one frame at 7200 dpi, 24 / 16 / 8 bit on real scans, cancel, eject |
+| Tested on a real scanner (2026-11-08 / 09 / 10) | One colour strip of 6 frames at 600 dpi, 48 bit: start-up, driver download, USB rule, loading with the reinsert prompt, scanning, numbering and files. One frame was refused by the driver (margin too small); the explanation and the offset advice in the program come from that scan. Then one single frame (frame 3 of a strip) at 7200 dpi, 48 bit: worked. A second strip was added to the same folder (numbering continued). Cancelling a scan and then ejecting worked. The AppImage built by GitHub Actions was started and tried on the Steam Deck |
+| **Not yet tested on a real scanner** | Whole film with several strips, black & white, 3600 dpi, more than one frame at 7200 dpi, 24 / 16 / 8 bit on real scans |
 | Not supported | Other scanners; inversion / editing; other CPU architectures (the AppImage is x86_64) |
 
 ---

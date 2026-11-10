@@ -19,7 +19,7 @@ from ..core.session import (FILM_MODE, FRAMES_PER_STRIP, STRIP_MODE, ScanSession
 from ..i18n import tr
 from . import messages, style
 from .bridge import SessionBridge, run_async
-from .dialogs import InfoDialog, TextDialog, UpdateDialog
+from .dialogs import AboutDialog, InfoDialog, TextDialog, UpdateDialog
 from .options import OptionsDialog
 from .widgets import FrameList, FrameToggles, pil_to_qimage
 
@@ -300,6 +300,10 @@ class MainWindow(QMainWindow):
         footer.addWidget(self.btn_log)
         footer.addStretch(1)
         footer.addWidget(self.lb_driver)
+        self.btn_about = QPushButton("?")
+        self.btn_about.setFixedSize(style.BUTTON_H, style.BUTTON_H)
+        self.btn_about.clicked.connect(self._show_about)
+        footer.addWidget(self.btn_about)
         lay.addLayout(footer)
         lay.addWidget(self.log)
         return panel
@@ -308,6 +312,7 @@ class MainWindow(QMainWindow):
     def retranslate(self) -> None:
         self.setWindowTitle(tr("app.title"))
         self.btn_check.setText(tr("top.check"))
+        self.btn_about.setToolTip(tr("about.tooltip"))
         self.btn_options.setText("⚙  " + tr("top.options"))
         self.btn_banner_notes.setText(tr("banner.notes"))
         self.btn_mode_strip.setText(tr("mode.strip"))
@@ -983,6 +988,11 @@ class MainWindow(QMainWindow):
             self._set_status(tr("negpy.failed"), str(e), "error")
             return
         self._set_status(tr("negpy.started"), tr("negpy.hint", folder=folder), "ok")
+
+    def _show_about(self) -> None:
+        driver_version = self.driver.version if self.driver else "-"
+        html = messages.about_html(__version__, driver_version, str(paths.log_dir()))
+        self._show_dialog(AboutDialog(self, tr("about.title"), html))
 
     def _open_folder(self) -> None:
         if self._last_dir:

@@ -440,3 +440,53 @@ _t("opt.usb_text",
    "first two commands.")
 _t("opt.usb_readonly", "SteamOS schützt das Systemlaufwerk; vorher entsperren, danach wieder sperren.",
    "SteamOS protects the system drive; unlock it first and lock it again afterwards.")
+
+# ---- about box
+_t("about.tooltip", "Info zu FilmDeck", "About FilmDeck")
+_t("about.title", "Über FilmDeck", "About FilmDeck")
+_t("about.intro",
+   "<p><b>FilmDeck {version}</b> ist ein kleines, einfaches Scan-Programm für den Plustek OpticFilm 135i. Es ersetzt "
+   "nur die Kommandozeile: Das Scannen und das Bewegen des Scanners macht der Treiber, Invertieren und Bearbeiten "
+   "übernimmt NegPy.</p>",
+   "<p><b>FilmDeck {version}</b> is a small, simple scan program for the Plustek OpticFilm 135i. It only replaces "
+   "the command line: scanning and moving the scanner is done by the driver, inverting and editing is left to "
+   "NegPy.</p>")
+_t("about.driver",
+   "<h3>Der Treiber: opticfilm135i-linux</h3><p>Alles, was den Scanner bewegt und ausliest, macht der Treiber "
+   "<b>opticfilm135i-linux</b> von cgillinger (GPL-2.0): <a href=\"{url}\">{url}</a><br>FilmDeck lädt ihn beim ersten "
+   "Start herunter und ruft ihn als eigenes Programm auf. Ohne seine Arbeit gäbe es FilmDeck nicht. Installierte "
+   "Version: {version}.<br>Probleme mit dem Scanner oder dem Treiber selbst gehören in dessen Repository, Probleme "
+   "mit dieser Oberfläche zu FilmDeck.</p>",
+   "<h3>The driver: opticfilm135i-linux</h3><p>Everything that moves and reads the scanner is done by the driver "
+   "<b>opticfilm135i-linux</b> by cgillinger (GPL-2.0): <a href=\"{url}\">{url}</a><br>FilmDeck downloads it at "
+   "the first start and runs it as a separate program. Without his work there would be no FilmDeck. Installed "
+   "version: {version}.<br>Problems with the scanner or the driver itself belong in the driver's repository, "
+   "problems with this interface to FilmDeck.</p>")
+_t("about.project",
+   "<h3>FilmDeck</h3><p>Quelltext, Downloads und Fehlermeldungen: <a href=\"{url}\">{url}</a><br>Lizenz: MIT (frei "
+   "nutzbar und veränderbar, ohne Gewährleistung).</p>",
+   "<h3>FilmDeck</h3><p>Source code, downloads and bug reports: <a href=\"{url}\">{url}</a><br>Licence: MIT (free "
+   "to use and change, without warranty).</p>")
+_t("about.ai",
+   "<h3>Mit KI gemacht</h3><p>FilmDeck wurde von Claude (Anthropic) zusammen mit dem Besitzer des Repositorys "
+   "geschrieben. Es ist bisher nur in kleinem Umfang an einem echten Scanner getestet; was getestet ist und was "
+   "nicht, steht in der README.</p>",
+   "<h3>Made with AI</h3><p>FilmDeck was written by Claude (Anthropic) together with the owner of the "
+   "repository. So far it has only been tested to a small extent on a real scanner; the README says what has been "
+   "tested and what has not.</p>")
+_t("about.negpy",
+   "<h3>NegPy</h3><p>Zum Invertieren und Bearbeiten der Negative: <a href=\"{url}\">{url}</a><br>FilmDeck startet "
+   "es nur auf Wunsch.</p>",
+   "<h3>NegPy</h3><p>For inverting and editing the negatives: <a href=\"{url}\">{url}</a><br>FilmDeck only starts "
+   "it on request.</p>")
+_t("about.logs",
+   "<h3>Bei Problemen</h3><p>Bitte <b>filmdeck.log</b> und das neueste Scan-Protokoll aus diesem Ordner mitschicken:"
+   "<br>{folder}</p>",
+   "<h3>If something goes wrong</h3><p>Please send <b>filmdeck.log</b> and the newest scan log from this "
+   "folder:<br>{folder}</p>")
+_t("about.legal",
+   "<p>Unabhängiges Projekt, nicht mit Plustek verbunden. Benutzung auf eigene Verantwortung.</p>",
+   "<p>Independent project, not affiliated with Plustek. Use at your own risk.</p>")
+_t("opt.driver_link",
+   "Der Treiber heißt <b>opticfilm135i-linux</b> und stammt von cgillinger (GPL-2.0): <a href=\"{url}\">{url}</a>",
+   "The driver is called <b>opticfilm135i-linux</b> and is by cgillinger (GPL-2.0): <a href=\"{url}\">{url}</a>")

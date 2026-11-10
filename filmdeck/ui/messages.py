@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from html import escape
+
+from .. import DRIVER_URL, NEGPY_URL, REPO_URL
 from ..core.margins import OffsetAdvice, refusal_kind
 from ..core.session import SessionResult
 from ..i18n import language, tr
@@ -12,6 +15,19 @@ ERROR_CODES = (
     "load_failed", "interrupted", "scan_failed", "status_failed", "driver_old", "no_space", "no_write",
     "export_failed", "internal",
 )
+
+
+def about_html(version: str, driver_version: str, log_folder: str) -> str:
+    """The text of the info box (HTML for a QTextBrowser; every value that is not ours is escaped)."""
+    return "".join((
+        tr("about.intro", version=escape(version)),
+        tr("about.driver", url=DRIVER_URL, version=escape(driver_version or "-")),
+        tr("about.project", url=REPO_URL),
+        tr("about.ai"),
+        tr("about.negpy", url=NEGPY_URL),
+        tr("about.logs", folder=escape(log_folder)),
+        tr("about.legal"),
+    ))
 
 
 def describe_error(code: str, detail: str = "", version: str = "") -> tuple[str, str]:

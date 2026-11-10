@@ -332,3 +332,36 @@ def test_window_icon_file_ships_with_the_package():
     import filmdeck
     icon = Path(filmdeck.__file__).with_name("filmdeck.png")
     assert icon.read_bytes()[:8] == b"\x89PNG\r\n\x1a\n"
+
+
+@pytest.mark.parametrize("lang", ["de", "en"])
+def test_info_button_opens_the_about_box_with_all_links(app, window, lang):
+    from filmdeck import DRIVER_URL, NEGPY_URL, REPO_URL, __version__
+    from filmdeck import i18n
+    from filmdeck.core import paths
+    from filmdeck.ui.dialogs import AboutDialog
+    try:
+        i18n.set_language(lang)
+        window.retranslate()
+        assert window.btn_about.toolTip()
+        window.btn_about.click()
+        boxes = [w for w in app.topLevelWidgets() if isinstance(w, AboutDialog) and w.isVisible()]
+        assert len(boxes) == 1
+        text, html = boxes[0].view.toPlainText(), boxes[0].view.toHtml()
+        for needle in (DRIVER_URL, REPO_URL, NEGPY_URL, "opticfilm135i-linux", "MIT", "Claude", "NegPy",
+                       str(paths.log_dir()), __version__):
+            assert needle in text, needle
+        for url in (DRIVER_URL, REPO_URL, NEGPY_URL):
+            assert f'href="{url}"' in html
+        boxes[0].accept()
+    finally:
+        i18n.set_language("de")
+        window.retranslate()
+
+
+def test_options_driver_page_names_and_links_the_driver(app, window):
+    from filmdeck import DRIVER_URL
+    from filmdeck.ui.options import OptionsDialog
+    dlg = OptionsDialog(window, window.settings, driver=window.driver, update_state={}, busy=False)
+    assert "opticfilm135i-linux" in dlg.lb_driver.text() and "managed" not in dlg.lb_driver.text()
+    assert DRIVER_URL in dlg.lb_driver_link.text() and dlg.lb_driver_link.openExternalLinks()
