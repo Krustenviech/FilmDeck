@@ -202,7 +202,7 @@ CI (`.github/workflows/build.yml`) runs the tests including the contract tests a
 
 ## Licence and credits
 
-- **FilmDeck's licence has not been chosen yet** (the owner decides). Until a licence file is added, all rights are reserved.
+- FilmDeck is released under the [MIT licence](LICENSE): you may use, copy, change and pass it on, also commercially, as long as the licence text stays with it. It comes without any warranty.
 - The scanner driver [opticfilm135i-linux](https://github.com/cgillinger/opticfilm135i-linux) (GPL-2.0) is not part of this repository or the AppImage; it is downloaded at run time and called as a separate program.
 - [NegPy](https://github.com/marcinz606/NegPy) is a separate program, started on request.
 - The AppImage bundles Python (python-build-standalone), Qt for Python / PySide6 (LGPL-3.0), numpy, Pillow, tifffile, pyusb and libusb (LGPL-2.1), each under its own licence.

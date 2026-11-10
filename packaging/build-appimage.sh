@@ -53,7 +53,7 @@ tar -xzf "$BUILD/cache/$PY_FILE" -C "$APPDIR/usr"          # -> AppDir/usr/pytho
 PY="$APPDIR/usr/python/bin/python3"
 
 # install from a copy of the sources so the checkout stays clean
-cp -r "$ROOT/filmdeck" "$ROOT/pyproject.toml" "$ROOT/README.md" "$BUILD/src/"
+cp -r "$ROOT/filmdeck" "$ROOT/pyproject.toml" "$ROOT/README.md" "$ROOT/LICENSE" "$BUILD/src/"
 find "$BUILD/src" -name __pycache__ -type d -prune -exec rm -rf {} +
 "$PY" -m pip install --disable-pip-version-check --no-warn-script-location --quiet "$BUILD/src"
 
