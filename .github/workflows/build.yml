@@ -20,6 +20,17 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: The tag must match the version in the code and have a changelog entry (tags only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          code="$(sed -n 's/^__version__ *= *"\(.*\)"/\1/p' filmdeck/__init__.py)"
+          if [ "$tag" != "$code" ]; then
+            echo "::error::tag v$tag, but filmdeck/__init__.py says $code. Fix the version, delete the tag, tag again."
+            exit 1
+          fi
+          bash packaging/release-notes.sh "$tag" > /dev/null
+
       - name: System libraries (Qt offscreen, libusb)
         run: |
           sudo apt-get update
@@ -51,6 +62,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          bash packaging/release-notes.sh "${GITHUB_REF_NAME#v}" > "$RUNNER_TEMP/notes.md"
           gh release create "$GITHUB_REF_NAME" packaging/build/FilmDeck-*-x86_64.AppImage \
             --title "FilmDeck $GITHUB_REF_NAME" \
-            --notes "AppImage built by GitHub Actions. Make it executable (chmod +x) and start it. See the README."
+            --notes-file "$RUNNER_TEMP/notes.md"
