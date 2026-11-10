@@ -68,6 +68,19 @@ def read_index(stage_dir: str | Path, album: str) -> dict | None:
     return data if isinstance(data, dict) and isinstance(data.get("images"), list) else None
 
 
+def missing_numbers(stage_dir: str | Path, album: str) -> set[int]:
+    """The numbers the driver's album index lists without a delivered image (reserved numbers)."""
+    index = read_index(stage_dir, album)
+    out: set[int] = set()
+    for item in (index or {}).get("images", []):
+        try:
+            if item.get("status") != "delivered":
+                out.add(int(item["number"]))
+        except (AttributeError, KeyError, TypeError, ValueError):
+            continue
+    return out
+
+
 def _link_or_copy(src: Path, dst: Path) -> None:
     try:
         os.link(src, dst)

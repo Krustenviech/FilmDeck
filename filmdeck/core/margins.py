@@ -21,13 +21,15 @@ from dataclasses import dataclass, field
 
 OFFSET_LIMIT_MM = 3.0       # the driver refuses more than +/-3 mm
 STEP_MM = 0.1
-REFUSAL_KINDS = ("lead", "trail", "both", "other")
+REFUSAL_KINDS = ("lead", "trail", "both", "stage", "other")
 MIN_CHANGE_MM = 0.2         # a smaller correction is within the load-to-load spread: no advice
 
 _NUM = r"(\d+(?:\.\d+)?)"
 _SCANNING = re.compile(r"\bscanning frame (\d+) @")
 _PLANNED = re.compile(r"\boverscan frame (\d+) \(\d+ dpi\):.*\bmargins lead=" + _NUM + r" trail=" + _NUM + r" mm")
 _MEASURED = re.compile(r"^aperture coverage: VERIFIED\b.*?margins lead " + _NUM + r" mm, trail " + _NUM + r" mm")
+_COVERAGE_WORDS = ("aperture", "margin", "coverage", "edge", "ir:")
+_STAGE = re.compile(r"[a-z_ ]{1,24}")
 _REFUSED = re.compile(r"^aperture coverage: NOT verified\s*[—-]\s*(.*?)\.\s+Kept the full overscan")
 
 
@@ -121,8 +123,10 @@ class MarginTracker:
 
 
 def refusal_kind(reason: str) -> str:
-    """One of REFUSAL_KINDS: which margin the driver's reason says was too small ("other": none of them)."""
-    r = reason.lower()
+    """One of REFUSAL_KINDS. lead / trail / both: which margin the driver's reason says was too small.
+    stage: no coverage reason at all, only the name of the step the frame stopped at ("scan": the scan was
+    cancelled or failed while this frame was being scanned). other: any other coverage reason."""
+    r = reason.lower().strip()
     lead, trail = "leading margin below" in r, "trailing margin below" in r
     if lead and trail:
         return "both"
@@ -130,4 +134,8 @@ def refusal_kind(reason: str) -> str:
         return "lead"
     if trail:
         return "trail"
+    if any(w in r for w in _COVERAGE_WORDS):
+        return "other"
+    if _STAGE.fullmatch(r):
+        return "stage"
     return "other"

@@ -171,6 +171,7 @@ class ScanSession:
         self._thread: threading.Thread | None = None
         self._log_file = None
         self._margins = MarginTracker()
+        self._known_missing: set[int] = set()      # reserved before this run: not reported again
         self.result: SessionResult | None = None
         self.final_dir = self.settings.scan_root() / name
         self.stage_dir = self.final_dir / ".driver"
@@ -284,6 +285,7 @@ class ScanSession:
         if self._cancel.is_set():
             return SessionResult("cancelled", final_dir=self.final_dir)
 
+        self._known_missing = exporter.missing_numbers(self.stage_dir, self.name)
         strips, new_total, partial = 0, 0, False
         export = exporter.ExportResult()
         warnings: list[str] = []
@@ -333,6 +335,7 @@ class ScanSession:
                                            preview_size=s.preview_size)
         except Exception as e:
             result = exporter.ExportResult(index_found=True, warnings=[f"export failed: {type(e).__name__}: {e}"])
+        result.missing = [m for m in result.missing if m.number not in self._known_missing]
         self._emit("exported", images=result.images, missing=result.missing, warnings=result.warnings)
         return result
 

@@ -86,3 +86,6 @@ def test_refusal_kinds():
     assert refusal_kind("IR: trailing margin below min_margin_mm (0.15 mm)") == "trail"
     assert refusal_kind("leading margin below x; trailing margin below x") == "both"
     assert refusal_kind("IR: aperture not found") == "other"
+    assert refusal_kind("empty aperture") == "other"
+    # no coverage reason, only the step the frame stopped at (what a cancelled scan leaves behind)
+    assert refusal_kind("scan") == "stage" and refusal_kind("not delivered") == "stage"

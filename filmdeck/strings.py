@@ -237,9 +237,9 @@ _t("res.ok.title", "Scan fertig", "Scan finished")
 _t("res.ok.text", "{new} neue Bilder gespeichert, {total} im Film.\n{folder}", "{new} new images saved, {total} in the film.\n{folder}")
 _t("res.partial.title", "Scan fertig, aber nicht vollständig", "Scan finished, but incomplete")
 _t("res.partial.text",
-   "{new} neue Bilder gespeichert. Nicht sicher erkannt wurden die Bilder Nr. {missing}; ihre Nummern bleiben "
+   "{new} neue Bilder gespeichert. Für die Bilder Nr. {missing} gibt es keine Datei; ihre Nummern bleiben "
    "reserviert.\n{folder}",
-   "{new} new images saved. The images no. {missing} could not be verified; their numbers stay reserved.\n{folder}")
+   "{new} new images saved. There is no file for images no. {missing}; their numbers stay reserved.\n{folder}")
 _t("miss.title.one", "Bild {numbers} fehlt", "Image {numbers} is missing")
 _t("miss.title.many", "Bilder {numbers} fehlen", "Images {numbers} are missing")
 _t("miss.reason.lead",
@@ -254,6 +254,9 @@ _t("miss.reason.both",
 _t("miss.reason.other",
    "Bild {number} wurde gescannt, aber nicht gespeichert: Die Bildöffnung wurde nicht sicher erkannt ({reason}).",
    "Image {number} was scanned but not saved: the film opening was not found reliably ({reason}).")
+_t("miss.reason.stage",
+   "Für Bild {number} gibt es keine Datei: Es wurde nicht zu Ende gescannt, zum Beispiel weil der Scan abgebrochen wurde.",
+   "There is no file for image {number}: it was not scanned to the end, for example because the scan was cancelled.")
 _t("miss.reserved.one", "Die Nummer bleibt reserviert.", "The number stays reserved.")
 _t("miss.reserved.many", "Die Nummern bleiben reserviert.", "The numbers stay reserved.")
 _t("miss.overscan",

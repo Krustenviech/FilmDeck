@@ -285,3 +285,28 @@ def test_no_advice_without_a_refused_frame(settings, demo):
     demo.setenv("OF135I_DEMO_SCENARIO", "early:0.5")
     res = Run(settings, "strip", "26-11-Test-Cam", frames=[1, 2]).go()
     assert res.kind == "ok" and res.offset_advice is None
+
+
+def test_a_frame_lost_in_an_earlier_run_is_not_reported_again(settings, demo):
+    settings.preview_size = 0
+    demo.setenv("OF135I_DEMO_SCENARIO", "early:0.5,tight:2")
+    first = Run(settings, "strip", "26-11-Test-Cam", frames=[1, 2, 3]).go()
+    assert first.kind == "partial" and first.missing == [2]
+    demo.delenv("OF135I_DEMO_SCENARIO")
+    second = Run(settings, "strip", "26-11-Test-Cam", frames=[1, 2]).go()
+    # number 02 is still reserved and still has no file, but this run lost nothing
+    assert second.kind == "ok" and second.missing == [] and second.missing_details == []
+    assert second.images_new == 2
+
+
+def test_a_frame_without_coverage_reason_is_described_as_unfinished_not_as_unrecognised():
+    from filmdeck import i18n
+    from filmdeck.core import exporter
+    from filmdeck.ui import messages
+    res = sess.SessionResult("partial", missing=[3], missing_details=[exporter.MissingImage(3, "scan")])
+    for lang in ("de", "en"):
+        i18n.set_language(lang)
+        title, text, advice = messages.describe_missing(res)
+        assert "03" in title and "(scan)" not in text and "erkannt" not in text and "reliably" not in text
+        assert advice is None
+    i18n.set_language("de")
