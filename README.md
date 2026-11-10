@@ -12,7 +12,8 @@ It is a front-end for the community driver [opticfilm135i-linux](https://github.
 - German and English, switchable
 
 It does **not** invert, colour-correct or edit anything. Scans are negatives; inversion and editing happen in NegPy.
-
+---
+<img width="1912" height="1030" alt="FilmDeck" src="https://github.com/user-attachments/assets/c12263b4-60d4-43d6-8349-cbde7d0eb227" />
 ---
 
 ## Made with AI – please read
